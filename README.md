@@ -44,6 +44,7 @@ The template starts out very basic, but might receive additional features over t
    ```
    cmake -B build
    cmake --build build
+   ./build/bin/main
    ```
 
 9. Enjoy!
