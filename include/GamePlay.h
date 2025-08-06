@@ -12,6 +12,7 @@
 #include "State.h"
 #include "Game.h"
 #include "BlueDude.h"
+#include "Coin.h"
 
 class Context;
 
@@ -29,13 +30,13 @@ class GamePlay : public Engine::State
         sf::Music bgSound;
 
         //Sprites
-        std::optional<sf::Sprite> m_grass;
-        std::optional<sf::Sprite> m_food;
+        std::unique_ptr<sf::Sprite> m_background;
         std::array<std::unique_ptr<sf::Sprite>, 3> m_walls;
         std::unique_ptr<sf::Sprite> m_ground; 
         std::unique_ptr<Character> m_player; 
         std::optional<sf::Text> m_scoreText;
         std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
+        std::vector<std::unique_ptr<Coin>> m_coins;
 
 
         // Camera system
@@ -50,6 +51,7 @@ class GamePlay : public Engine::State
         ~GamePlay();
 
         void Init() override;
+        void InitTextures();
         void ProcessInput() override;
         void Update(sf::Time deltaTime) override;
         void Draw() override;

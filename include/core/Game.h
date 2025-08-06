@@ -18,7 +18,7 @@ enum AssetID
     MAIN_FONT = 0,
     GROUND,
     UNDERGROUND,
-    GRASS,
+    BACKGROUND,
     FOOD,
     WALL,
     MAIN_BACKGROUND,
@@ -30,6 +30,12 @@ enum AssetID
     BLUE_DUDE_ATTACK,
     BLUE_DUDE_THROW,
     ROCK,
+    COIN_1,
+    COIN_2,
+    COIN_3,
+    COIN_4,
+    COIN_5,
+    COIN_6,
     BRICK1
 };
 
