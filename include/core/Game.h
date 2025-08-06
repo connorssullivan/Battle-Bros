@@ -29,7 +29,8 @@ enum AssetID
     BLUE_DUDE_JUMP,
     BLUE_DUDE_ATTACK,
     BLUE_DUDE_THROW,
-    ROCK
+    ROCK,
+    BRICK1
 };
 
 struct Context

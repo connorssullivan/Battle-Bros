@@ -60,6 +60,10 @@ void GamePlay::Init()
     std::string rockPath = "assets/textures/objects/rock.png";
     m_context->m_assets->AddTexture(ROCK, rockPath);
 
+    std::string brick1Path = "assets/textures/platforms/brick1.png";
+    m_context->m_assets->AddTexture(BRICK1, brick1Path, true);
+
+
 
 
 
@@ -81,13 +85,33 @@ void GamePlay::Init()
     m_ground->setTextureRect(sf::IntRect({0, 0}, {level_width, Config::WALL_THICKNESS}));
     m_ground->setPosition({0, Config::SCREEN_HEIGHT - Config::WALL_THICKNESS});
 
+    // set up bricks
+    const sf::Texture& brickTex = m_context->m_assets->getTexture(BRICK1);
 
-    // Emplace the sprite with that texture (required in SFML 3)
+    // Example brick layout 
+    float scaleX = 12.f / brickTex.getSize().x;
+    float scaleY = 12.f / brickTex.getSize().y;
+
+    float brickWidth  = brickTex.getSize().x * scaleX;
+    float brickHeight = brickTex.getSize().y * scaleY;
+    for (int i = 0; i < 5; ++i)  // Row of bricks
+    {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({300.f + i * brickWidth, 700.f}); 
+        m_bricks.push_back(std::move(brick));
+    }
+
+    for (int i = 0; i < 3; ++i)  // Floating platform
+    {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({600.f + i * brickWidth, 150.f});
+        m_bricks.push_back(std::move(brick));
+    }
+
+    // Emplace the sprite with that texture 
     m_grass.emplace(grassTex);
-    /*m_grass->setScale({
-            16.f / static_cast<float>(grassTex.getSize().x),
-            16.f / static_cast<float>(grassTex.getSize().y)
-        });*/
     m_food.emplace(foodTex);
 
 
@@ -116,7 +140,7 @@ void GamePlay::Init()
     const sf::Texture& dudeJumpTex = m_context->m_assets->getTexture(BLUE_DUDE_JUMP);
     const sf::Texture& rockTex = m_context->m_assets->getTexture(ROCK);
     const sf::Texture& dudeThrowTex = m_context->m_assets->getTexture(BLUE_DUDE_THROW);
-    m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, rockTex);
+    m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, rockTex, level_width);
     m_player->SetPosition(200, Config::SCREEN_HEIGHT - 32.f);
 
 
@@ -146,7 +170,6 @@ void GamePlay::ProcessInput()
             switch (keyEvent->code)
             {
             case sf::Keyboard::Key::Up:
-            std::cout << (m_player->getIsOnGround() ? "On Ground" : "Not On Ground") << "\n";
                 if (m_player->getIsOnGround()) {
                     m_player->jump();
                 }
@@ -157,8 +180,12 @@ void GamePlay::ProcessInput()
             case sf::Keyboard::Key::Left:
                 {
                     // Preserve Y velocity for jumping
-                    sf::Vector2f currentVel = m_player->getVelocity();
-                    m_player->setVelocity({-m_player->getSpeed(), currentVel.y});
+
+                    float dirX = -1.f;
+                    if (!m_player->checkPlayerCollision(getPlatforms(),dirX))
+                    {
+                         m_player->setVelocity({dirX * m_player->getSpeed(), m_player->getVelocity().y});
+                    }
                     m_player->setIsWalking(true);
                     m_player->GetSprite().setScale({-1.f, 1.f});
                 }
@@ -166,8 +193,11 @@ void GamePlay::ProcessInput()
             case sf::Keyboard::Key::Right:
                 {
                     // Preserve Y velocity for jumping
-                    sf::Vector2f currentVel = m_player->getVelocity();
-                    m_player->setVelocity({m_player->getSpeed(), currentVel.y});
+                    float dirX = 1.f;
+                    if (!m_player->checkPlayerCollision(getPlatforms(),dirX))
+                    {
+                         m_player->setVelocity({dirX * m_player->getSpeed(), m_player->getVelocity().y});
+                    }
                     m_player->setIsWalking(true);
                     m_player->GetSprite().setScale({1.f, 1.f});
                 }
@@ -214,13 +244,15 @@ void GamePlay::Update(sf::Time deltaTime)
 {
     if (!m_isPaused)
     {
+        // Get platforms once for all collision checks
+        std::vector<sf::Sprite*> platforms = getPlatforms();
+        
         if(m_player->getWalking())
-            m_player->Update(deltaTime.asSeconds(), true); 
+            m_player->Update(deltaTime.asSeconds(), true, platforms); 
         else   
-            m_player->Update(deltaTime.asSeconds(), false); 
+            m_player->Update(deltaTime.asSeconds(), false, platforms); 
         
         // Update rock physics with collision detection
-        std::vector<sf::Sprite*> platforms = getPlatforms();
         if (m_player->getRockState() == Character::RockState::Flying)
             m_player->updateRockPhysics(deltaTime.asSeconds(), platforms);
         else if (m_player->getRockState() == Character::RockState::Landed)
@@ -257,6 +289,8 @@ void GamePlay::Draw()
     m_context->m_window->draw(*m_food);
     m_player->Draw(*m_context->m_window);
     
+    for (auto& brick : m_bricks)
+        m_context->m_window->draw(*brick);
     
     // Draw UI elements (these stay fixed on screen)
     m_context->m_window->setView(m_context->m_window->getDefaultView());  // Reset to default view for UI
@@ -309,6 +343,9 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
     {
         platforms.push_back(&m_food.value());
     }
+
+    for (auto& brick : m_bricks)
+        if (brick) platforms.push_back(brick.get());
     
     return platforms;
 }

@@ -35,6 +35,7 @@ class GamePlay : public Engine::State
         std::unique_ptr<sf::Sprite> m_ground; 
         std::unique_ptr<Character> m_player; 
         std::optional<sf::Text> m_scoreText;
+        std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
 
 
         // Camera system

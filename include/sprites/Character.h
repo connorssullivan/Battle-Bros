@@ -51,7 +51,7 @@ class Character
         Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText, int levelWidth);
         virtual ~Character() = default;
 
-        virtual void Update(float dt, bool isWalking);
+        virtual void Update(float dt, bool isWalking, const std::vector<sf::Sprite*>& platforms);
         virtual void Draw(sf::RenderWindow& window);
 
         void jump();
@@ -74,6 +74,10 @@ class Character
         bool checkRockCollision(const sf::Sprite& otherSprite);
         void updateRockPhysics(float dt, const std::vector<sf::Sprite*>& platforms);
         void pickupRock();
+        bool checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, float directionX);
+        bool checkPlayerCollisionDuringMovement(const std::vector<sf::Sprite*>& platforms, float directionX);
+        bool checkVerticalCollision(const std::vector<sf::Sprite*>& platforms, sf::Vector2f& landingPosition);
+        bool isOnPlatform(const std::vector<sf::Sprite*>& platforms);
 
 
 };
