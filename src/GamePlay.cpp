@@ -163,12 +163,27 @@ void GamePlay::Init()
         m_bricks.push_back(std::move(brick));
     }
 
-    // st the background
-    m_background= std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(BACKGROUND));
-
-
-    // Apply full viewport rect to the grass sprite
-    m_background->setScale({static_cast<float>(level_width), Config::SCREEN_HEIGHT});
+    // Set up the background
+    m_background = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(BACKGROUND));
+    
+    // Calculate scaling to cover the full level width
+    sf::Vector2u textureSize = m_context->m_assets->getTexture(BACKGROUND).getSize();
+    
+    // Scale to cover the full level width
+    float bgScaleX = static_cast<float>(level_width) / textureSize.x;
+    float bgScaleY = static_cast<float>(Config::SCREEN_HEIGHT) / textureSize.y;
+    
+    // Use the larger scale to ensure the background covers the entire level
+    float bgScale = std::max(bgScaleX, bgScaleY);
+    m_background->setScale({bgScale, bgScale});
+    
+    // Position the background to cover the full level
+    m_background->setPosition({0, 0});
+    
+    // Create a second background for seamless repeating
+    m_background2 = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(BACKGROUND));
+    m_background2->setScale({bgScale, bgScale});
+    m_background2->setPosition({textureSize.x * bgScale, 0}); // Position it right after the first one
 
     // Create the walls
     m_walls[0]->setTextureRect(sf::IntRect({0, 0}, {level_width, Config::WALL_THICKNESS}));
@@ -195,7 +210,7 @@ void GamePlay::Init()
     {
         std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
         coin->GetSprite().setScale({scaleX, scaleY});
-        coin->GetSprite().setPosition({1100.f + i * brickWidth, 380.f});
+        coin->GetSprite().setPosition({1100.f + i * brickWidth, 380.f - 30});
 
         m_coins.push_back(std::move(coin));
         
@@ -393,9 +408,14 @@ void GamePlay::Draw()
 {
     m_context->m_window->clear();
     
-    // Draw world elements (these will move with camera)
+    // Set the camera view for world elements
+    m_context->m_window->setView(m_camera);
+    
+    // Draw backgrounds (these move with camera)
     m_context->m_window->draw(*m_background);
-
+    m_context->m_window->draw(*m_background2);
+    
+    // Draw world elements (these will move with camera)
     m_context->m_window->draw(*m_ground);
 
     for (auto& wall : m_walls)
@@ -442,7 +462,40 @@ void GamePlay::UpdateCamera()
     sf::Vector2f currentCenter = m_camera.getCenter();
     sf::Vector2f newCenter = currentCenter + (m_cameraTarget - currentCenter) * m_cameraSmoothness;
     
+    // Clamp camera to level bounds
+    float halfWidth = Config::SCREEN_WIDTH / 2.0f;
+    float halfHeight = Config::SCREEN_HEIGHT / 2.0f;
+    int level_width = 3000; // Same as defined in Init()
+    
+    newCenter.x = std::max(halfWidth, std::min(level_width - halfWidth, newCenter.x));
+    newCenter.y = std::max(halfHeight, std::min(Config::SCREEN_HEIGHT - halfHeight, newCenter.y));
+    
     m_camera.setCenter(newCenter);
+    
+    // Update background positions for seamless repeating
+    if (m_background && m_background2) {
+        sf::Vector2f bgOffset = (newCenter - sf::Vector2f(Config::SCREEN_WIDTH / 2.0f, Config::SCREEN_HEIGHT / 2.0f)) * 0.1f;
+        sf::Vector2u textureSize = m_context->m_assets->getTexture(BACKGROUND).getSize();
+        float bgScaleX = static_cast<float>(3000) / textureSize.x; // level_width value
+        float bgScaleY = static_cast<float>(Config::SCREEN_HEIGHT) / textureSize.y;
+        float bgScale = std::max(bgScaleX, bgScaleY);
+        float bgWidth = textureSize.x * bgScale;
+        
+        // Calculate positions for seamless repeating
+        float bg1X = bgOffset.x;
+        float bg2X = bg1X + bgWidth;
+        
+        // Wrap backgrounds when they go off screen
+        if (bg1X + bgWidth < 0) {
+            bg1X += bgWidth * 2;
+            bg2X += bgWidth * 2;
+        } else if (bg2X < 0) {
+            bg2X += bgWidth * 2;
+        }
+        
+        m_background->setPosition({bg1X, bgOffset.y - 300}); // Move up by 300 pixels
+        m_background2->setPosition({bg2X, bgOffset.y - 300}); // Move up by 300 pixels
+    }
     
     m_context->m_window->setView(m_camera);
 }
