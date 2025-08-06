@@ -7,9 +7,13 @@
 
 class Character 
 {
+    public:
+        enum class RockState { None, Flying, Landed };
     protected:
         sf::Sprite m_sprite;
         sf::Sprite m_rock;
+
+        RockState m_rockState;
 
         const sf::Texture& m_walkTexture;
         const sf::Texture& m_idleTexture;
@@ -21,11 +25,12 @@ class Character
         sf::Vector2f m_rockVelocity;  // Separate velocity for rock
 
         int m_rockAmmo;
+        int m_levelWidth;
         float m_speed; 
         float m_gravity;   
         float m_jumpStrength; 
         bool m_isOnGround;
-        bool m_throwRock;
+        
 
         std::vector<sf::IntRect> m_idleFrames;
         std::vector<sf::IntRect> m_walkFrames;
@@ -37,9 +42,13 @@ class Character
         int m_currentFrame;
         bool m_isWalking;
         bool m_isJumping;
+        bool m_isThrow;
+        bool m_isThrowingAnimation;
+        float m_throwAnimTime;
+        float m_throwAnimDuration; 
 
     public:
-        Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText);
+        Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText, int levelWidth);
         virtual ~Character() = default;
 
         virtual void Update(float dt, bool isWalking);
@@ -57,13 +66,14 @@ class Character
         bool getWalking() const {return m_isWalking;};
         bool getJumping() const {return m_isJumping;};
         bool getIsOnGround() const {return m_isOnGround;};
-        bool getIsThrowing() const {return m_throwRock;};
         float getSpeed() const {return m_speed;};
+        RockState getRockState() const {return m_rockState;};
         sf::Vector2f getVelocity() const {return m_velocity;};
         
         // Collision detection methods
         bool checkRockCollision(const sf::Sprite& otherSprite);
         void updateRockPhysics(float dt, const std::vector<sf::Sprite*>& platforms);
+        void pickupRock();
 
 
 };

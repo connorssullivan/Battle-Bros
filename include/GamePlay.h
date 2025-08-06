@@ -31,7 +31,8 @@ class GamePlay : public Engine::State
         //Sprites
         std::optional<sf::Sprite> m_grass;
         std::optional<sf::Sprite> m_food;
-        std::array<std::optional<sf::Sprite>, 4> m_walls;
+        std::array<std::unique_ptr<sf::Sprite>, 3> m_walls;
+        std::unique_ptr<sf::Sprite> m_ground; 
         std::unique_ptr<Character> m_player; 
         std::optional<sf::Text> m_scoreText;
 

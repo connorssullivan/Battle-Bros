@@ -1,4 +1,5 @@
 #include "GamePlay.h"
+
 #include <string>
 #include <stdlib.h>
 #include <time.h>
@@ -41,6 +42,9 @@ void GamePlay::Init()
     std::string wallPath = "assets/textures/wall.png";
     m_context->m_assets->AddTexture(WALL,  wallPath, true);
 
+    std::string groundPath = "assets/textures/platforms/ground.png";
+    m_context->m_assets->AddTexture(GROUND,  groundPath, true);
+
     std::string blueDudePath = "assets/textures/charecters/blue_dude/blue_dude_idle.png";
     m_context->m_assets->AddTexture(BLUE_DUDE, blueDudePath);
 
@@ -66,10 +70,16 @@ void GamePlay::Init()
     const sf::Texture& foodTex = m_context->m_assets->getTexture(FOOD);
     const sf::Texture& wallTex = m_context->m_assets->getTexture(WALL);
 
-    for (auto& wall : m_walls)
+    for (int i=0; i < m_walls.size(); i++)
     {
-        wall.emplace(wallTex);
+        m_walls[i]  = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(WALL));
     }
+
+    // Create the floor
+    m_ground = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(GROUND));
+    int level_width { 2000 }; // This is length of gornd
+    m_ground->setTextureRect(sf::IntRect({0, 0}, {level_width, Config::WALL_THICKNESS}));
+    m_ground->setPosition({0, Config::SCREEN_HEIGHT - Config::WALL_THICKNESS});
 
 
     // Emplace the sprite with that texture (required in SFML 3)
@@ -88,12 +98,13 @@ void GamePlay::Init()
 
     // Create the walls
     m_walls[0]->setTextureRect(sf::IntRect({0, 0}, {Config::SCREEN_WIDTH, Config::WALL_THICKNESS}));
-    m_walls[1]->setTextureRect(sf::IntRect({0, 0}, {Config::SCREEN_WIDTH, Config::WALL_THICKNESS}));
-    m_walls[1]->setPosition({0, Config::SCREEN_HEIGHT -16});
+    m_walls[0]->setPosition({0, 0}); // Top wall
 
+    m_walls[1]->setTextureRect(sf::IntRect({0, 0}, {Config::WALL_THICKNESS, Config::SCREEN_HEIGHT}));
+    m_walls[1]->setPosition({0, 0}); // Left wall
+    
     m_walls[2]->setTextureRect(sf::IntRect({0, 0}, {Config::WALL_THICKNESS, Config::SCREEN_HEIGHT}));
-    m_walls[3]->setTextureRect(sf::IntRect({0, 0}, {Config::WALL_THICKNESS, Config::SCREEN_HEIGHT}));
-    m_walls[3]->setPosition({Config::SCREEN_WIDTH - 16, 0});
+    m_walls[2]->setPosition({static_cast<float>(level_width) - Config::WALL_THICKNESS, 0}); // Right wall
 
     // Create food
     m_food->setPosition({Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT/2});
@@ -210,10 +221,21 @@ void GamePlay::Update(sf::Time deltaTime)
         
         // Update rock physics with collision detection
         std::vector<sf::Sprite*> platforms = getPlatforms();
-        m_player->updateRockPhysics(deltaTime.asSeconds(), platforms);
+        if (m_player->getRockState() == Character::RockState::Flying)
+            m_player->updateRockPhysics(deltaTime.asSeconds(), platforms);
+        else if (m_player->getRockState() == Character::RockState::Landed)
+        {
+            m_player->updateRockPhysics(deltaTime.asSeconds(), platforms);
+            m_player->pickupRock();
+        }
         
         // Update camera to follow player
         UpdateCamera();
+    }
+    else
+    {
+        // When paused, don't update anything but keep the camera stable
+        // Don't call UpdateCamera() when paused
     }
 }
 
@@ -225,6 +247,8 @@ void GamePlay::Draw()
     // Draw world elements (these will move with camera)
     m_context->m_window->draw(*m_grass);
 
+    m_context->m_window->draw(*m_ground);
+
     for (auto& wall : m_walls)
     {
         m_context->m_window->draw(*wall);
@@ -232,6 +256,7 @@ void GamePlay::Draw()
 
     m_context->m_window->draw(*m_food);
     m_player->Draw(*m_context->m_window);
+    
     
     // Draw UI elements (these stay fixed on screen)
     m_context->m_window->setView(m_context->m_window->getDefaultView());  // Reset to default view for UI
@@ -271,12 +296,13 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
     
     // Add walls as platforms
     for (auto& wall : m_walls)
-    {
-        if (wall.has_value())
-        {
-            platforms.push_back(&wall.value());
-        }
+    {    
+        if (wall)
+            platforms.push_back(wall.get());
     }
+
+    if (m_ground)
+        platforms.push_back(m_ground.get());
     
     // Add food as a platform (optional)
     if (m_food.has_value())

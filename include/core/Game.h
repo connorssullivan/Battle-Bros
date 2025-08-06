@@ -16,6 +16,8 @@
 enum AssetID
 {
     MAIN_FONT = 0,
+    GROUND,
+    UNDERGROUND,
     GRASS,
     FOOD,
     WALL,
