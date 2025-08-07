@@ -13,6 +13,7 @@
 #include "Game.h"
 #include "BlueDude.h"
 #include "Coin.h"
+#include "Monster.h"
 
 class Context;
 
@@ -38,6 +39,7 @@ class GamePlay : public Engine::State
         std::optional<sf::Text> m_scoreText;
         std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
         std::vector<std::unique_ptr<Coin>> m_coins;
+        std::unique_ptr<Monster> m_monster;
 
 
         // Camera system
@@ -62,4 +64,5 @@ class GamePlay : public Engine::State
     private:
         void UpdateCamera();
         std::vector<sf::Sprite*> getPlatforms();  // Get all platform sprites for collision
+        bool checkMonsterAttack();
 };

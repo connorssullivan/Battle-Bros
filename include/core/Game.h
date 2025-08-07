@@ -29,6 +29,7 @@ enum AssetID
     BLUE_DUDE_JUMP,
     BLUE_DUDE_ATTACK,
     BLUE_DUDE_THROW,
+    BLUE_DUDE_DEATH,
     ROCK,
     COIN_1,
     COIN_2,
@@ -36,7 +37,13 @@ enum AssetID
     COIN_4,
     COIN_5,
     COIN_6,
-    BRICK1
+    BRICK1,
+    MONSTER_IDLE,
+    MONSTER_WALK,
+    MONSTER_ATTACK1,
+    MONSTER_ATTACK2,
+    MONSTER_DEATH,
+    MONSTER_HURT
 };
 
 struct Context

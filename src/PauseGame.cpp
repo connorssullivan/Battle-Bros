@@ -164,10 +164,10 @@ void PauseGame::Draw()
     m_context->m_window->setView(m_context->m_window->getDefaultView());
     
     // Draw a semi-transparent overlay
-    sf::RectangleShape overlay;
-    overlay.setSize(sf::Vector2f(m_context->m_window->getSize()));
-    overlay.setFillColor(sf::Color(0, 0, 0, 128));
-    m_context->m_window->draw(overlay);
+    //sf::RectangleShape overlay;
+    //overlay.setSize(sf::Vector2f(m_context->m_window->getSize()));
+    //overlay.setFillColor(sf::Color(0, 0, 0, 128));
+    //m_context->m_window->draw(overlay);
     
     m_context->m_window->draw(*m_gameTitle);
     m_context->m_window->draw(*m_playButton);

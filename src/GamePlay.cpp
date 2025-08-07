@@ -154,6 +154,28 @@ void GamePlay::Init()
         }
     }
 
+    // === MONSTER ===
+    // Create monster right after the staircase
+    const sf::Texture& monsterIdleTex = m_context->m_assets->getTexture(MONSTER_IDLE);
+    const sf::Texture& monsterWalkTex = m_context->m_assets->getTexture(MONSTER_WALK);
+    const sf::Texture& monsterAttack1Tex = m_context->m_assets->getTexture(MONSTER_ATTACK1);
+    const sf::Texture& monsterAttack2Tex = m_context->m_assets->getTexture(MONSTER_ATTACK2);
+    const sf::Texture& monsterHurtTex = m_context->m_assets->getTexture(MONSTER_HURT);
+    const sf::Texture& monsterDeathTex = m_context->m_assets->getTexture(MONSTER_DEATH);
+    
+    // Set patrol bounds around the staircase area
+    float monsterLeftBound = 1400.f;
+    float monsterRightBound = 1600.f;
+    
+    m_monster = std::make_unique<Monster>(monsterIdleTex, monsterWalkTex, monsterAttack1Tex, 
+                                         monsterAttack2Tex, monsterHurtTex, monsterDeathTex,
+                                         monsterLeftBound, monsterRightBound);
+    
+    // Position the monster near the staircase
+    m_monster->GetSprite().setPosition({1450.f, 565.f});
+    m_monster->GetSprite().setScale({2.0f, 2.0f}); // Make monster 2x bigger
+    m_monster->SetState(Monster::State::Walk); // Start in walking state
+
     // === HIGH PLATFORMS ===
     // Very high platform for advanced jumping
     for (int i = 0; i < 4; ++i) {
@@ -166,21 +188,19 @@ void GamePlay::Init()
     // Set up the background
     m_background = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(BACKGROUND));
     
-    // Calculate scaling to cover the full level width
     sf::Vector2u textureSize = m_context->m_assets->getTexture(BACKGROUND).getSize();
     
     // Scale to cover the full level width
     float bgScaleX = static_cast<float>(level_width) / textureSize.x;
     float bgScaleY = static_cast<float>(Config::SCREEN_HEIGHT) / textureSize.y;
     
-    // Use the larger scale to ensure the background covers the entire level
     float bgScale = std::max(bgScaleX, bgScaleY);
     m_background->setScale({bgScale, bgScale});
     
     // Position the background to cover the full level
     m_background->setPosition({0, 0});
     
-    // Create a second background for seamless repeating
+    // Create a second background for repeat (If needed)
     m_background2 = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(BACKGROUND));
     m_background2->setScale({bgScale, bgScale});
     m_background2->setPosition({textureSize.x * bgScale, 0}); // Position it right after the first one
@@ -206,6 +226,7 @@ void GamePlay::Init()
     m_player->SetPosition(200, Config::SCREEN_HEIGHT - 32.f);
 
 
+    // Make some coins
     for (int i=0; i < 5; i++)
     {
         std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
@@ -216,7 +237,7 @@ void GamePlay::Init()
         
     }
 
-
+    // Initalize score score
     m_scoreText = sf::Text(m_context->m_assets->getFont(MAIN_FONT), "Score: ", 30);
     m_scoreText->setString("Score: " + std::to_string(m_score));
 
@@ -229,7 +250,7 @@ void GamePlay::Init()
 
 void GamePlay::InitTextures()
 {
-    // These now work because AddTexture takes const std::string&
+    // Initalize textures
     std::string backgroundPath = "assets/textures/backgrounds/Background_01.png";
     m_context->m_assets->AddTexture(BACKGROUND, backgroundPath, true);
 
@@ -275,6 +296,25 @@ void GamePlay::InitTextures()
 
     std::string coin6Path = "assets/textures/objects/Coin_06.png";
     m_context->m_assets->AddTexture(COIN_6, coin6Path);
+
+    //Monster textures
+    std::string monsterIdlePath = "assets/textures/charecters/monster/Idle.png";
+    m_context->m_assets->AddTexture(MONSTER_IDLE, monsterIdlePath);
+
+    std::string monsterWalkPath = "assets/textures/charecters/monster/Walk.png";
+    m_context->m_assets->AddTexture(MONSTER_WALK, monsterWalkPath);
+
+    std::string monsterAttack1pathe = "assets/textures/charecters/monster/Attack1.png";
+    m_context->m_assets->AddTexture(MONSTER_ATTACK1, monsterAttack1pathe);
+
+    std::string monsterAttack2Path = "assets/textures/charecters/monster/Attack2.png";
+    m_context->m_assets->AddTexture(MONSTER_ATTACK2, monsterAttack2Path);
+
+    std::string monsterDeathPath = "assets/textures/charecters/monster/Death.png";
+    m_context->m_assets->AddTexture(MONSTER_DEATH, monsterDeathPath);
+
+    std::string monsterHurtPath = "assets/textures/charecters/monster/Hurt.png";
+    m_context->m_assets->AddTexture(MONSTER_HURT, monsterHurtPath);
 }
 
 
@@ -393,6 +433,15 @@ void GamePlay::Update(sf::Time deltaTime)
             m_player->pickupRock();
         }
         
+        // Update monster
+        if (m_monster) {
+            m_monster->Update(deltaTime.asSeconds());
+            // Check if monster attacks player
+            if (checkMonsterAttack()) {
+                // TODO: Monster Attack
+            }
+        }
+        
         // Update camera to follow player
         UpdateCamera();
     }
@@ -431,6 +480,11 @@ void GamePlay::Draw()
     // Draw all coins
     for (auto& coin : m_coins) {
         coin->Draw(*m_context->m_window);
+    }
+    
+    // Draw monster
+    if (m_monster) {
+        m_monster->Draw(*m_context->m_window);
     }
     
     m_player->Draw(*m_context->m_window);
@@ -521,3 +575,30 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
     
     return platforms;
 }
+
+bool GamePlay::checkMonsterAttack()
+{
+    if (!m_monster) return false;
+    // Get bounds
+    sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
+    sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
+
+    sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
+    sf::Vector2f playerCenter = playerBounds.position + (playerBounds.size / 2.f);
+
+    // This can calculate attaZZ
+    float dx = monsterCenter.x - playerCenter.x;
+    float dy = monsterCenter.y - playerCenter.y;
+    float distance = std::sqrt(dx * dx + dy * dy);
+
+    float attackRadius = 120.f; 
+
+    if (distance < attackRadius) {
+        m_monster->SetState(Monster::State::Attack1);
+        return true;
+    }
+
+
+    return false;
+}
+

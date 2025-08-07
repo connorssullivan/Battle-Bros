@@ -550,4 +550,9 @@ bool Character::isOnPlatform(const std::vector<sf::Sprite*>& platforms)
     return false;
 }
 
+//void Character::kill()
+//{
+    
+//}
+
 

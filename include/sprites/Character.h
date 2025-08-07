@@ -13,6 +13,24 @@ class Character
         sf::Sprite m_sprite;
         sf::Sprite m_rock;
 
+        int m_rockAmmo;
+        int m_levelWidth;
+        int m_currentFrame;
+
+        float m_frameTime;
+        float m_elapsedTime;
+        float m_throwAnimTime;
+        float m_throwAnimDuration; 
+        float m_speed; 
+        float m_gravity;   
+        float m_jumpStrength; 
+        
+        bool m_isOnGround;
+        bool m_isWalking;
+        bool m_isJumping;
+        bool m_isThrow;
+        bool m_isThrowingAnimation;
+
         RockState m_rockState;
 
         const sf::Texture& m_walkTexture;
@@ -24,12 +42,8 @@ class Character
         sf::Vector2f m_velocity;
         sf::Vector2f m_rockVelocity;  // Separate velocity for rock
 
-        int m_rockAmmo;
-        int m_levelWidth;
-        float m_speed; 
-        float m_gravity;   
-        float m_jumpStrength; 
-        bool m_isOnGround;
+        
+        
         
 
         std::vector<sf::IntRect> m_idleFrames;
@@ -37,15 +51,9 @@ class Character
         std::vector<sf::IntRect> m_jumpFrames;
         std::vector<sf::IntRect> m_throwFrames;
 
-        float m_frameTime;
-        float m_elapsedTime;
-        int m_currentFrame;
-        bool m_isWalking;
-        bool m_isJumping;
-        bool m_isThrow;
-        bool m_isThrowingAnimation;
-        float m_throwAnimTime;
-        float m_throwAnimDuration; 
+        
+        
+        
 
     public:
         Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText, int levelWidth);
