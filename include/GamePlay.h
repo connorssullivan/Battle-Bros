@@ -54,7 +54,7 @@ class GamePlay : public Engine::State
         ~GamePlay();
 
         void Init() override;
-        void InitTextures();
+        
         void ProcessInput() override;
         void Update(sf::Time deltaTime) override;
         void Draw() override;
