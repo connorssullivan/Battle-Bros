@@ -591,21 +591,27 @@ bool GamePlay::checkMonsterAttack()
     sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
     sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
 
-    sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
+    // Use monster's bottom position instead of center for more realistic attack detection
+    sf::Vector2f monsterAttackPoint = {monsterBounds.position.x + monsterBounds.size.x / 2.f, 
+                                       monsterBounds.position.y + monsterBounds.size.y};
     sf::Vector2f playerCenter = playerBounds.position + (playerBounds.size / 2.f);
 
-    // This can calculate atta
-    float dx = monsterCenter.x - playerCenter.x;
-    float dy = monsterCenter.y - playerCenter.y;
-    float distance = std::sqrt(dx * dx + dy * dy);
-
-    float attackRadius = 120.f; 
-
-    if (distance < attackRadius) {
+    // Calculate horizontal and vertical distances
+    float dx = monsterAttackPoint.x - playerCenter.x;
+    float dy = monsterAttackPoint.y - playerCenter.y;
+    
+    // Define elliptical attack area (taller than wide)
+    float attackRadiusX = 80.f;  // Horizontal radius (narrower)
+    float attackRadiusY = 40.f; // Vertical radius (taller)
+    
+    // Check if player is within elliptical attack area
+    float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
+                              (dy * dy) / (attackRadiusY * attackRadiusY);
+    
+    if (normalizedDistance < 1.0f) {
         m_monster->SetState(Monster::State::Attack1);
         return true;
     }
-
 
     return false;
 }
