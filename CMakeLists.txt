@@ -26,6 +26,7 @@ add_executable(main
     src/BlueDude.cpp
     src/Coin.cpp
     src/Monster.cpp
+    src/LevelSelector.cpp
 )
 target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)

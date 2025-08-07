@@ -1,9 +1,10 @@
 #include "MainMenu.h"
 #include "GamePlay.h"
+#include "LevelSelector.h"
 
 MainMenu::MainMenu(std::shared_ptr<Context>& context)
 : m_context {context}
-, m_isPlayButtonSelected {true}, m_isPlayButtonPressed {false}
+, m_isLevelsButtonSelected {true}, m_isLevelsButtonPressed {false}
 , m_isExitButtonSelected {false}, m_isExitButtonPressed {false}
 
 {
@@ -53,26 +54,24 @@ void MainMenu::Init()
 
     m_gameTitle->setPosition(sf::Vector2f(
         m_context->m_window->getSize().x / 2.0f,
-        m_context->m_window->getSize().y / 2.0f - 150.f
+        m_context->m_window->getSize().y / 2.0f - 100.f
     ));
 
-    // Play Button
-    m_playButton = sf::Text(font, "Play", 20);
-    m_playButton->setFont(font);
-    m_playButton->setString("Play");
+    // Levels Button
+    m_levelsButton = sf::Text(font, "Levels", 20);
+    m_levelsButton->setFont(font);
+    m_levelsButton->setString("Levels");
 
-    sf::FloatRect play_bounds = m_playButton->getLocalBounds();
-    
+    sf::FloatRect levels_bounds = m_levelsButton->getLocalBounds();
 
-    m_playButton->setOrigin(sf::Vector2f(
-        play_bounds.position.x + play_bounds.size.x / 2.f,
-        play_bounds.position.y + play_bounds.size.y / 2.f 
+    m_levelsButton->setOrigin(sf::Vector2f(
+        levels_bounds.position.x + levels_bounds.size.x / 2.f,
+        levels_bounds.position.y + levels_bounds.size.y / 2.f 
     ));
 
-
-    m_playButton->setPosition(sf::Vector2f(
+    m_levelsButton->setPosition(sf::Vector2f(
         m_context->m_window->getSize().x / 2.0f,
-        m_context->m_window->getSize().y / 2.0f - 25.f
+        m_context->m_window->getSize().y / 2.0f
     ));
 
     // Exit Button
@@ -87,10 +86,9 @@ void MainMenu::Init()
         exit_bounds.position.y + exit_bounds.size.y / 2.f
     ));
 
-
     m_exitButton->setPosition(sf::Vector2f(
         m_context->m_window->getSize().x / 2.0f,
-        m_context->m_window->getSize().y / 2.0f + 25.f
+        m_context->m_window->getSize().y / 2.0f + 50.f
     ));
     
 }
@@ -109,26 +107,26 @@ void MainMenu::ProcessInput()
             switch (keyEvent->code)
             {
             case sf::Keyboard::Key::Up:
-                if (!m_isPlayButtonSelected)
+                if (m_isExitButtonSelected)
                 {
-                    m_isPlayButtonSelected = true;
+                    m_isLevelsButtonSelected = true;
                     m_isExitButtonSelected = false;
                 }
                 break;
             case sf::Keyboard::Key::Down:
-                if (!m_isExitButtonSelected)
+                if (m_isLevelsButtonSelected)
                 {
-                    m_isExitButtonSelected= true;
-                    m_isPlayButtonSelected = false;
+                    m_isExitButtonSelected = true;
+                    m_isLevelsButtonSelected = false;
                 }
                 break;
             case sf::Keyboard::Key::Enter:
-                m_isPlayButtonPressed = false;
+                m_isLevelsButtonPressed = false;
                 m_isExitButtonPressed = false;
 
-                if (m_isPlayButtonSelected)
+                if (m_isLevelsButtonSelected)
                 {
-                    m_isPlayButtonPressed = true;
+                    m_isLevelsButtonPressed = true;
                 }
                 if (m_isExitButtonSelected)
                 {
@@ -145,22 +143,21 @@ void MainMenu::ProcessInput()
 
 void MainMenu::Update(sf::Time deltaTime) 
 {
-    if (m_isPlayButtonSelected)
+    if (m_isLevelsButtonSelected)
     {
-        m_playButton->setFillColor(sf::Color::Green);
+        m_levelsButton->setFillColor(sf::Color::Green);
         m_exitButton->setFillColor(sf::Color::Black);
     }
     else 
     {
+        m_levelsButton->setFillColor(sf::Color::Black);
         m_exitButton->setFillColor(sf::Color::Green);
-        m_playButton->setFillColor(sf::Color::Black);
     }
 
-    if (m_isPlayButtonPressed)
+    if (m_isLevelsButtonPressed)
     {
-        m_isPlayButtonPressed = false; 
-        m_context->m_states->Add(std::make_unique<GamePlay>(m_context), true);
-
+        m_isLevelsButtonPressed = false;
+        m_context->m_states->Add(std::make_unique<LevelSelector>(m_context), true);
     }
 
     if (m_isExitButtonPressed)
@@ -176,7 +173,7 @@ void MainMenu::Draw()
 
     m_context->m_window->draw(*m_background);
     m_context->m_window->draw(*m_gameTitle);
-    m_context->m_window->draw(*m_playButton);
+    m_context->m_window->draw(*m_levelsButton);
     m_context->m_window->draw(*m_exitButton);
     m_context->m_window->display();
 }
