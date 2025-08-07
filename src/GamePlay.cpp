@@ -443,6 +443,10 @@ void GamePlay::Update(sf::Time deltaTime)
             // Check if monster attacks player
             if (checkMonsterAttack()) {
                 // TODO: Monster Attack
+                m_player->kill();
+                //To do add a delay
+                if (m_player->getDidDeathEnd())
+                    m_context->m_states->Add(std::make_unique<GameOver>(m_context), true);
             }
         }
         

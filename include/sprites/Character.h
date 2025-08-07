@@ -24,6 +24,10 @@ class Character
         float m_speed; 
         float m_gravity;   
         float m_jumpStrength; 
+        float m_deathDelayTimer;
+        float m_deathDelayDuration;
+        bool m_deathEnded;
+
         
         bool m_isOnGround;
         bool m_isWalking;
@@ -78,6 +82,7 @@ class Character
         bool getWalking() const {return m_isWalking;};
         bool getJumping() const {return m_isJumping;};
         bool getIsOnGround() const {return m_isOnGround;};
+        bool getDidDeathEnd() const {return m_deathEnded;};
         float getSpeed() const {return m_speed;};
         RockState getRockState() const {return m_rockState;};
         sf::Vector2f getVelocity() const {return m_velocity;};

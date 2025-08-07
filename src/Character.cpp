@@ -5,7 +5,7 @@
 Character::Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& deathText, const sf::Texture& rockText, int level_width)
 : m_frameTime {0.15f}, m_elapsedTime {0.f}, m_currentFrame {0}, m_sprite {idleText}
 , m_idleTexture {idleText}, m_walkTexture {walkText}, m_jumpText {jumpText}, m_throwTex {throwText}, m_deathText {deathText}
-, m_isWalking {false}, m_isJumping {false}, m_isDead {false}
+, m_isWalking {false}, m_isJumping {false}, m_isDead {false}, m_deathDelayTimer {0.f}, m_deathDelayDuration {1.f}, m_deathEnded {false}
 , m_velocity{0.f, 0.f}, m_rockVelocity{0.f, 0.f}, m_speed{Config::WALK_SPEED}
 , m_gravity {Config::GRAVITY}, m_jumpStrength {Config::JUMP_STRENGTH}, m_isOnGround {true}
 ,m_rockTex(rockText), m_rock {rockText}, m_rockAmmo {1}, m_rockState {RockState::None}, m_isThrow {false}, m_isThrowingAnimation {false}, m_throwAnimTime {0.f}, m_throwAnimDuration {0.25f}
@@ -26,9 +26,13 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
 
     // Store original position to revert if collision occurs
     sf::Vector2f originalPos = m_sprite.getPosition();
-
+    if (m_isDead)
+    {
+        //m_deathAnimStarted = true;
+    }
     // Apply physics and movement 
-    if (!m_isOnGround) {
+    else if (!m_isOnGround) 
+    {
         // Jumping/falling physics
         m_velocity.y += m_gravity * dt;
         
@@ -111,6 +115,41 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
     m_elapsedTime += dt;
     if (m_elapsedTime >= m_frameTime)
     {
+        if (m_isDead)
+        {
+            // Start delay countdown immediately
+            m_deathDelayTimer += dt;
+            
+            //std::cout << "Death timer: " << m_deathDelayTimer << " / " << m_deathDelayDuration + 1.f << std::endl;
+
+            //Cheack for the  end screen
+            if (m_deathDelayTimer > m_deathDelayDuration + 0.1)
+            {
+                m_deathEnded = true;
+            }
+
+            // Wait for delay to finish
+            if (m_deathDelayTimer < m_deathDelayDuration)
+            {
+                return;
+            }
+
+            // Now start animation
+            m_elapsedTime += dt;
+            if (m_elapsedTime >= m_frameTime)
+            {
+                m_elapsedTime = 0.f;
+
+                if (m_currentFrame < m_deathFrames.size())
+                {
+                    m_sprite.setTexture(m_deathText);
+                    m_sprite.setTextureRect(m_deathFrames[m_currentFrame]);
+                    m_currentFrame++;
+                }
+            }
+                
+            return; // Don't run any other animations
+        }
         if (m_isThrowingAnimation)
         {
             m_throwAnimTime += dt;
