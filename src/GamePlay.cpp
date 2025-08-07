@@ -446,7 +446,7 @@ void GamePlay::Update(sf::Time deltaTime)
                 m_player->kill();
                 //To do add a delay
                 if (m_player->getDidDeathEnd())
-                    m_context->m_states->Add(std::make_unique<GameOver>(m_context), true);
+                    m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
             }
         }
         

@@ -30,10 +30,9 @@ BlueDude::BlueDude(const sf::Texture& idleText, const sf::Texture& walkText, con
     m_jumpFrames.push_back(sf::IntRect({224, 0}, {32, 32}));
 
     // Throwing frames
-    m_throwFrames.push_back(sf::IntRect({0, 0}, {32, 32}));
-    m_throwFrames.push_back(sf::IntRect({32, 0}, {32, 32}));
-    m_throwFrames.push_back(sf::IntRect({64, 0}, {32, 32}));
-    m_throwFrames.push_back(sf::IntRect({96, 0}, {32, 32}));
+    for (int i=0; i < 3; i++)
+        m_throwFrames.push_back(sf::IntRect({i * 32, 0}, {32, 32}));
+    
 
     // Death frames
     for (int i=0; i < 8; i++)

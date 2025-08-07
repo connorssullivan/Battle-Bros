@@ -17,14 +17,17 @@ class GameOver : public Engine::State
         std::optional<sf::Text> m_gameTitle;
         std::optional<sf::Text> m_playButton;
         std::optional<sf::Text> m_exitButton;
+        std::optional<sf::Text> m_score;
 
+        int m_scoreValue;
         bool m_isExitButtonSelected;
         bool m_isExitButtonPressed;
         bool m_isPlayButtonSelected;
         bool m_isPlayButtonPressed;
 
+
     public:
-        GameOver(std::shared_ptr<Context>& context);
+        GameOver(std::shared_ptr<Context>& context, int score);
         ~GameOver();
 
         void Init() override;

@@ -2,10 +2,11 @@
 #include "GamePlay.h"
 
 
-GameOver::GameOver(std::shared_ptr<Context>& context)
+GameOver::GameOver(std::shared_ptr<Context>& context, int score)
 : m_context (context)
 , m_isPlayButtonSelected (true), m_isPlayButtonPressed (false)
 , m_isExitButtonSelected (false), m_isExitButtonPressed (false)
+, m_scoreValue(score)
 {
 
 }
@@ -21,9 +22,21 @@ void GameOver::Init()
 
     const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
+    m_score = sf::Text(font, ("YOUR SCORE: " + std::to_string(m_scoreValue)), 50);
+
     m_gameTitle = sf::Text(font, "GAME OVER", 50);
 
     sf::FloatRect bounds = m_gameTitle->getLocalBounds();
+
+    m_score->setOrigin(sf::Vector2f(
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f 
+    ));
+
+    m_score->setPosition(sf::Vector2f(
+        m_context->m_window->getSize().x / 2.0f,
+        m_context->m_window->getSize().y / 2.0f - 250.f
+    ));
 
      m_gameTitle->setOrigin(sf::Vector2f(
         bounds.position.x + bounds.size.x / 2.f,
@@ -145,6 +158,7 @@ void GameOver::Update(sf::Time deltaTime)
 void GameOver::Draw() 
 {
     m_context->m_window->clear(sf::Color::Red);
+    m_context->m_window->draw(*m_score);
     m_context->m_window->draw(*m_gameTitle);
     m_context->m_window->draw(*m_playButton);
     m_context->m_window->draw(*m_exitButton);
