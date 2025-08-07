@@ -257,8 +257,98 @@ void GamePlay::Init()
 
         std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
         coin->GetSprite().setScale({scaleX, scaleY});
-        coin->GetSprite().setPosition({200.f + i * brickWidth, 650.f - 30});
+        coin->GetSprite().setPosition({1500.f + i * brickWidth, 200.f - 30});
 
+        m_coins.push_back(std::move(coin));
+    }
+
+    // === EXTENDED LEVEL SECTIONS ===
+    
+    // High platform section
+    for (int i = 0; i < 3; ++i) {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({1700.f + i * brickWidth, 150.f});
+        m_bricks.push_back(std::move(brick));
+
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({1700.f + i * brickWidth, 150.f - 30});
+        m_coins.push_back(std::move(coin));
+    }
+
+    // Mid-level floating platforms
+    for (int i = 0; i < 4; ++i) {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({1900.f + i * brickWidth, 350.f});
+        m_bricks.push_back(std::move(brick));
+
+        if (i == 1 || i == 3) // Coins on alternating platforms
+        {
+            std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+            coin->GetSprite().setScale({scaleX, scaleY});
+            coin->GetSprite().setPosition({1900.f + i * brickWidth, 350.f - 30});
+            m_coins.push_back(std::move(coin));
+        }
+    }
+
+    // Low platform section
+    for (int i = 0; i < 5; ++i) {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({2100.f + i * brickWidth, 500.f});
+        m_bricks.push_back(std::move(brick));
+
+        if (i % 2 == 0) // Coins on every other platform
+        {
+            std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+            coin->GetSprite().setScale({scaleX, scaleY});
+            coin->GetSprite().setPosition({2100.f + i * brickWidth, 500.f - 30});
+            m_coins.push_back(std::move(coin));
+        }
+    }
+
+    // Zigzag platforms
+    for (int i = 0; i < 6; ++i) {
+        float yPos = (i % 2 == 0) ? 300.f : 450.f;
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({2300.f + i * brickWidth, yPos});
+        m_bricks.push_back(std::move(brick));
+
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({2300.f + i * brickWidth, yPos - 30});
+        m_coins.push_back(std::move(coin));
+    }
+
+    // Final challenge section
+    for (int i = 0; i < 4; ++i) {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({2600.f + i * brickWidth, 250.f});
+        m_bricks.push_back(std::move(brick));
+
+        if (i == 0 || i == 3) // Coins on first and last platforms
+        {
+            std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+            coin->GetSprite().setScale({scaleX, scaleY});
+            coin->GetSprite().setPosition({2600.f + i * brickWidth, 250.f - 30});
+            m_coins.push_back(std::move(coin));
+        }
+    }
+
+    // Ground-level platforms near the end
+    for (int i = 0; i < 3; ++i) {
+        auto brick = std::make_unique<sf::Sprite>(brickTex);
+        brick->setScale({scaleX, scaleY});
+        brick->setPosition({2800.f + i * brickWidth, 550.f});
+        m_bricks.push_back(std::move(brick));
+
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({2800.f + i * brickWidth, 550.f - 30});
         m_coins.push_back(std::move(coin));
     }
 
