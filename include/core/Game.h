@@ -38,6 +38,7 @@ enum AssetID
     COIN_5,
     COIN_6,
     BRICK1,
+    STAR,
     MONSTER_IDLE,
     MONSTER_WALK,
     MONSTER_ATTACK1,

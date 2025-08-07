@@ -9,7 +9,7 @@ Game::Game()
     m_context->m_window->create(sf::VideoMode({Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT}), "Pup Chomp", sf::Style::Default);
     
     InitTextures();
-    
+
     // Set framerate limit 
     m_context->m_window->setFramerateLimit(60);
 
@@ -129,4 +129,7 @@ void Game::InitTextures()
 
     std::string monsterHurtPath = "assets/textures/charecters/monster/Hurt.png";
     m_context->m_assets->AddTexture(MONSTER_HURT, monsterHurtPath);
+
+    std::string starPath = "assets/textures/objects/Star.png";
+    m_context->m_assets->AddTexture(STAR, starPath);
 }

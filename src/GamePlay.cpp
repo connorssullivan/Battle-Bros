@@ -108,11 +108,17 @@ void GamePlay::Init()
     }
 
     // Small floating platforms
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({1100.f + i * brickWidth, 380.f});
         m_bricks.push_back(std::move(brick));
+
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({1100.f + i * brickWidth, 380.f - 30});
+        m_coins.push_back(std::move(coin));
     }
 
     // === SINGLE BLOCKS (like question blocks) ===
@@ -121,21 +127,43 @@ void GamePlay::Init()
     singleBlock1->setScale({scaleX, scaleY});
     singleBlock1->setPosition({400.f, 450.f});
     m_bricks.push_back(std::move(singleBlock1));
+    {
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({450.f, 350.f - 30});
+        m_coins.push_back(std::move(coin));
+    }
 
     auto singleBlock2 = std::make_unique<sf::Sprite>(brickTex);
     singleBlock2->setScale({scaleX, scaleY});
     singleBlock2->setPosition({450.f, 350.f});
     m_bricks.push_back(std::move(singleBlock2));
+    {
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({450.f, 350.f - 30});
+        m_coins.push_back(std::move(coin));
+    }
 
     auto singleBlock3 = std::make_unique<sf::Sprite>(brickTex);
     singleBlock3->setScale({scaleX, scaleY});
     singleBlock3->setPosition({750.f, 300.f});
     m_bricks.push_back(std::move(singleBlock3));
 
+    {
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({750.f, 300.f - 30});
+        m_coins.push_back(std::move(coin));
+    }
+
     // === STAIRCASE ===
     // Staircase going up
-    for (int step = 0; step < 4; ++step) {
-        for (int block = 0; block <= step; ++block) {
+    // TODO: These stair cases can be usefull, make them their own object
+    for (int step = 0; step < 4; ++step) 
+    {
+        for (int block = 0; block <= step; ++block) 
+        {
             auto brick = std::make_unique<sf::Sprite>(brickTex);
             brick->setScale({scaleX, scaleY});
             brick->setPosition({1300.f + step * brickWidth, 650.f - block * brickHeight});
@@ -151,10 +179,54 @@ void GamePlay::Init()
                 m_coins.push_back(std::move(coin));
             }
         }
+
     }
 
+    for (int step = 0; step < 6; ++step) 
+    {
+        for (int block = 0; block <= step; ++block) 
+        {
+            auto brick = std::make_unique<sf::Sprite>(brickTex);
+            brick->setScale({scaleX, scaleY});
+            brick->setPosition({1600.f + step * brickWidth, 500.f - block * brickHeight});
+            m_bricks.push_back(std::move(brick));
+
+            // Put coin on top
+            if (block == step)
+            {
+                std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+                coin->GetSprite().setScale({scaleX, scaleY});
+                coin->GetSprite().setPosition({1600.f + step * brickWidth, (500.f - block * brickHeight) - 30});
+
+                m_coins.push_back(std::move(coin));
+
+                if (step == 3)
+                {
+                    auto brick = std::make_unique<sf::Sprite>(brickTex);
+                    brick->setScale({scaleX, scaleY});
+                    brick->setPosition({1600.f + step * brickWidth, (float)(400.f - block * (brickHeight*1.5))});
+                    m_bricks.push_back(std::move(brick));
+                    
+                    for (int i = 1; i < 5; i++)
+                    {
+                        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+                        coin->GetSprite().setScale({scaleX, scaleY});
+                        coin->GetSprite().setPosition({1600.f + step * brickWidth, (float)((400.f - block * (brickHeight*1.5)) - (30*i))});
+
+                        m_coins.push_back(std::move(coin));
+                    }
+                }
+            }
+
+            
+
+        }
+
+    }
+
+    
+
     // === MONSTER ===
-    // Create monster right after the staircase
     const sf::Texture& monsterIdleTex = m_context->m_assets->getTexture(MONSTER_IDLE);
     const sf::Texture& monsterWalkTex = m_context->m_assets->getTexture(MONSTER_WALK);
     const sf::Texture& monsterAttack1Tex = m_context->m_assets->getTexture(MONSTER_ATTACK1);
@@ -172,7 +244,7 @@ void GamePlay::Init()
     
     // Position the monster near the staircase
     m_monster->GetSprite().setPosition({1450.f, 565.f});
-    m_monster->GetSprite().setScale({2.0f, 2.0f}); // Make monster 2x bigger
+    m_monster->GetSprite().setScale({2.0f, 2.0f}); 
     m_monster->SetState(Monster::State::Walk); // Start in walking state
 
     // === HIGH PLATFORMS ===
@@ -182,6 +254,12 @@ void GamePlay::Init()
         brick->setScale({scaleX, scaleY});
         brick->setPosition({1500.f + i * brickWidth, 200.f});
         m_bricks.push_back(std::move(brick));
+
+        std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
+        coin->GetSprite().setScale({scaleX, scaleY});
+        coin->GetSprite().setPosition({200.f + i * brickWidth, 650.f - 30});
+
+        m_coins.push_back(std::move(coin));
     }
 
     // Set up the background
@@ -225,6 +303,11 @@ void GamePlay::Init()
     m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, dudeDeathTex, rockTex, level_width);
     m_player->SetPosition(200, Config::SCREEN_HEIGHT - 32.f);
 
+
+    // Make Star
+    const sf::Texture& starTex = m_context->m_assets->getTexture(STAR);
+    m_star = std::make_unique<Star>(starTex);
+    m_star->GetSprite().setPosition({2800, 600});
 
     // Make some coins
     for (int i=0; i < 5; i++)
@@ -348,6 +431,10 @@ void GamePlay::Update(sf::Time deltaTime)
     {
         // Get platforms once for all collision checks
         std::vector<sf::Sprite*> platforms = getPlatforms();
+
+        //if (checkGotStar())
+        checkGotStar();
+
         
         if(m_player->getWalking())
             m_player->Update(deltaTime.asSeconds(), true, platforms); 
@@ -411,15 +498,17 @@ void GamePlay::Draw()
         m_context->m_window->draw(*brick);
     }
 
-    // Draw all coins
+    
     for (auto& coin : m_coins) {
         coin->Draw(*m_context->m_window);
     }
     
-    // Draw monster
-    if (m_monster) {
+    if (m_star)
+        m_star->Draw(*m_context->m_window);
+    
+    if (m_monster) 
         m_monster->Draw(*m_context->m_window);
-    }
+    
     
     m_player->Draw(*m_context->m_window);
     
@@ -589,4 +678,32 @@ void GamePlay::CheckMonsterHit()
         
         m_player->resetRock();
     }
+}
+
+bool GamePlay::checkGotStar()
+{
+    sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
+    sf::FloatRect starBounds = m_star->GetSprite().getGlobalBounds();
+
+    sf::Vector2f playerCenter = playerBounds.position + (playerBounds.size / 2.f);
+    sf::Vector2f starCenter = starBounds.position + (starBounds.size / 2.f);
+
+    float dx = playerCenter.x - starCenter.x;
+    float dy = playerCenter.y - starCenter.y;
+
+    float hitRadiusX = 60.f;  
+    float hitRadiusY = 60.f;
+
+    float normalizedDistance = (dx * dx) / (hitRadiusX * hitRadiusX) + 
+                              (dy * dy) / (hitRadiusY * hitRadiusY);
+
+    if (normalizedDistance < 1.0f) {
+        std::cout << "Player got the star!" << std::endl;
+        m_monster->SetState(Monster::State::Death);
+        m_score += 100;
+        m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+        return true;
+    }
+
+    return false;
 }
