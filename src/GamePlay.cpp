@@ -512,7 +512,7 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
 
 bool GamePlay::checkMonsterAttack()
 {
-    if (!m_monster || m_monster->getState() == Monster::State::Death) 
+    if (!m_monster || m_monster->getState() == Monster::State::Death || m_monster->getState() == Monster::State::Attack1 || m_monster->getState() == Monster::State::Attack2) 
         return false;
 
     // Get bounds
@@ -552,7 +552,7 @@ bool GamePlay::checkMonsterAttack()
             m_monster->Flip();
         }
 
-        m_monster->SetState(Monster::State::Attack1);
+        m_monster->Attack1();
         return true;
     }
 

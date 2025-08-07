@@ -5,7 +5,7 @@
 Character::Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& deathText, const sf::Texture& rockText, int level_width)
 : m_frameTime {0.15f}, m_elapsedTime {0.f}, m_currentFrame {0}, m_sprite {idleText}
 , m_idleTexture {idleText}, m_walkTexture {walkText}, m_jumpText {jumpText}, m_throwTex {throwText}, m_deathText {deathText}
-, m_isWalking {false}, m_isJumping {false}, m_isDead {false}, m_deathDelayTimer {0.f}, m_deathDelayDuration {1.f}, m_deathEnded {false}
+, m_isWalking {false}, m_isJumping {false}, m_isDead {false}, m_deathDelayTimer {0.f}, m_deathDelayDuration {0.3}, m_deathEnded {false}
 , m_velocity{0.f, 0.f}, m_rockVelocity{0.f, 0.f}, m_speed{Config::WALK_SPEED}
 , m_gravity {Config::GRAVITY}, m_jumpStrength {Config::JUMP_STRENGTH}, m_isOnGround {true}
 ,m_rockTex(rockText), m_rock {rockText}, m_rockAmmo {1}, m_rockState {RockState::None}, m_isThrow {false}, m_isThrowingAnimation {false}, m_throwAnimTime {0.f}, m_throwAnimDuration {0.25f}

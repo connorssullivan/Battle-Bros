@@ -8,12 +8,12 @@ Monster::Monster(const sf::Texture& idleTex,
                  const sf::Texture& deathTex,
                  float leftBound, float rightBound)
     : m_idleTexture(idleTex), m_walkTexture(walkTex), m_attack1Texture(attack1Tex),
-      m_attack2Texture(attack2Tex), m_hurtTexture(hurtTex),
+      m_attack2Texture {attack2Tex}, m_hurtTexture {hurtTex},
       m_deathTexture(deathTex),
       m_leftBound(leftBound), m_rightBound(rightBound),
       m_speed(50.f), m_direction(1.f),
       m_frameTime(0.15f), m_elapsedTime(0.f), m_currentFrame(0),
-      m_state(State::Idle), m_facingRight(true),
+      m_state {State::Idle}, m_facingRight {true},
       m_sprite {idleTex}
 {
     m_sprite.setTexture(m_idleTexture);
@@ -121,6 +121,20 @@ void Monster::Update(float dt)
         {
             m_sprite.setTexture(*currentTex);
             m_sprite.setTextureRect((*currentFrames)[m_currentFrame]);
+            return;
+        }
+
+        // If Attack1 is done, switch to Attack2
+        if (m_state == State::Attack1 && m_currentFrame >= (int)(currentFrames->size() - 1))
+        {
+            SetState(State::Attack2);  // This resets frame and elapsed time
+            return;
+        }
+
+        // If Attack2 is done, switch back to Idle
+        if (m_state == State::Attack2 && m_currentFrame >= (int)(currentFrames->size() - 1))
+        {
+            SetState(State::Idle);
             return;
         }
 

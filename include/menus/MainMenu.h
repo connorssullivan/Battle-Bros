@@ -8,6 +8,8 @@
 #include "Config.h"
 #include "State.h"
 #include "Game.h"
+#include "sprites/BlueDude.h"
+#include "sprites/Monster.h"
 
 class Context;
 
@@ -19,21 +21,13 @@ class MainMenu : public Engine::State
         std::optional<sf::Text> m_gameTitle;
         std::optional<sf::Text> m_levelsButton;
         std::optional<sf::Text> m_exitButton;
-        std::optional<sf::Sprite> m_background;
-        std::optional<sf::Sprite> m_floor;
+        std::unique_ptr<sf::Sprite> m_background;
+        std::unique_ptr<sf::Sprite> m_floor;
 
         // Animated background elements
-        std::optional<sf::Sprite> m_blueDude;
-        std::optional<sf::Sprite> m_monster;
-        std::optional<sf::Sprite> m_rock;
-        std::vector<sf::IntRect> m_blueDudeFrames;
-        std::vector<sf::IntRect> m_monsterFrames;
-        std::vector<sf::IntRect> m_rockFrames;
-        int m_currentBlueDudeFrame;
-        int m_currentMonsterFrame;
-        int m_currentRockFrame;
-        float m_animationTimer;
-        float m_frameTime;
+        std::unique_ptr<BlueDude> m_blueDude;
+        std::unique_ptr<Monster> m_monster;
+        std::unique_ptr<sf::Sprite> m_rock;
         float m_rockTimer;
         bool m_rockFlying;
         sf::Vector2f m_rockVelocity;
@@ -55,7 +49,6 @@ class MainMenu : public Engine::State
         void Draw() override;
 
     private:
-        void InitAnimatedBackground();
         void UpdateAnimation(sf::Time deltaTime);
 
 
