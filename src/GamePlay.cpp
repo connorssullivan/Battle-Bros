@@ -440,8 +440,9 @@ void GamePlay::Update(sf::Time deltaTime)
         // Update monster
         if (m_monster) {
             m_monster->Update(deltaTime.asSeconds());
+            CheckMonsterHit();
             // Check if monster attacks player
-            if (checkMonsterAttack()) {
+            if (checkMonsterAttack() && m_monster->getState() != Monster::State::Death) {
                 // TODO: Monster Attack
                 m_player->kill();
                 if (m_player->getDidDeathEnd())
@@ -585,7 +586,9 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
 
 bool GamePlay::checkMonsterAttack()
 {
-    if (!m_monster) return false;
+    if (!m_monster || m_monster->getState() == Monster::State::Death) 
+        return false;
+        
     // Get bounds
     sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
     sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
@@ -630,3 +633,34 @@ bool GamePlay::checkMonsterAttack()
     return false;
 }
 
+void GamePlay::CheckMonsterHit()
+{
+    // Only check for collision when rock is flying
+    if (m_player->getRockState() != Character::RockState::Flying) {
+        return;
+    }
+    
+    sf::FloatRect rockBounds = m_player->getRock().getGlobalBounds();
+    sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
+    
+    sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
+    sf::Vector2f rockCenter = rockBounds.position + (rockBounds.size / 2.f);
+
+    float dx = monsterCenter.x - rockCenter.x;
+    float dy = monsterCenter.y - rockCenter.y;
+    
+    // Define elliptical attack area (taller than wide)
+    float attackRadiusX = 60.f;  
+    float attackRadiusY = 60.f;
+
+    float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
+                              (dy * dy) / (attackRadiusY * attackRadiusY);
+
+    if (normalizedDistance < 1.0f) {
+        
+        m_monster->SetState(Monster::State::Death);
+        
+        
+        m_player->resetRock();
+    }
+}

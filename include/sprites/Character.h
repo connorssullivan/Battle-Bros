@@ -79,6 +79,7 @@ class Character
         void setVelocity(sf::Vector2f velocity) {m_velocity = velocity;};
 
         sf::Sprite& GetSprite();
+        sf::Sprite& getRock() {return m_rock;};
         bool getWalking() const {return m_isWalking;};
         bool getJumping() const {return m_isJumping;};
         bool getIsOnGround() const {return m_isOnGround;};
@@ -91,6 +92,7 @@ class Character
         bool checkRockCollision(const sf::Sprite& otherSprite);
         void updateRockPhysics(float dt, const std::vector<sf::Sprite*>& platforms);
         void pickupRock();
+        void resetRock();
         bool checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, float directionX);
         bool checkPlayerCollisionDuringMovement(const std::vector<sf::Sprite*>& platforms, float directionX);
         bool checkVerticalCollision(const std::vector<sf::Sprite*>& platforms, sf::Vector2f& landingPosition);

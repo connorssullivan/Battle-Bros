@@ -60,5 +60,6 @@ public:
     void Flip();
 
     sf::Sprite& GetSprite();
+    State getState(){return m_state;};
     bool GetIsFaceingRight(){return m_facingRight;};
 };

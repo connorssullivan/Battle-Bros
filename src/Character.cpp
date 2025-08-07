@@ -456,6 +456,7 @@ bool Character::checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, 
         playerBounds.position.y + playerBounds.size.y / 2.f
     };
 
+    // Gp through all platforms and check for collison
     for (const auto* platform : platforms)
     {
         sf::FloatRect platformBounds = platform->getGlobalBounds();
@@ -464,6 +465,7 @@ bool Character::checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, 
             platformBounds.position.y + platformBounds.size.y / 2.f
         };
 
+        //Find intersection
         if (auto intersection = playerBounds.findIntersection(platformBounds))
         {
             const auto& rect = *intersection;
@@ -472,9 +474,11 @@ bool Character::checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, 
             if (rect.size.x < rect.size.y)
             {
                 // If moving right & player is to the left of platform center → block
-                if (directionX > 0 && playerCenter.x < platformCenter.x) return true;
+                if (directionX > 0 && playerCenter.x < platformCenter.x) 
+                    return true;
                 // If moving left & player is to the right of platform center → block
-                if (directionX < 0 && playerCenter.x > platformCenter.x) return true;
+                if (directionX < 0 && playerCenter.x > platformCenter.x) 
+                    return true;
             }
         }
     }
@@ -569,7 +573,8 @@ bool Character::isOnPlatform(const std::vector<sf::Sprite*>& platforms)
         float platformTop = platformBounds.position.y;
         
         // Check if player is standing on top of this platform
-        if (std::abs(playerBottom - platformTop) <= 5.f) { // Tolerance for standing detection
+        if (std::abs(playerBottom - platformTop) <= 5.f) // Tolerance for standing detection
+        { 
             // Check horizontal overlap
             float playerLeft = playerBounds.position.x;
             float playerRight = playerBounds.position.x + playerBounds.size.x;
@@ -582,7 +587,7 @@ bool Character::isOnPlatform(const std::vector<sf::Sprite*>& platforms)
             float overlapWidth = overlapRight - overlapLeft;
             
             if (overlapWidth > playerBounds.size.x * 0.3f) {
-                return true; // Standing on this platform
+                return true; 
             }
         }
     }
@@ -593,5 +598,14 @@ void Character::kill()
 {
     m_isDead = true;
 }
+
+void Character::resetRock()
+{
+    m_rockState = RockState::None;
+    m_rockVelocity = {0.f, 0.f};
+    m_rockAmmo = 1; // Give back the ammo
+}
+
+
 
 

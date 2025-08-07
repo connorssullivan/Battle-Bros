@@ -80,32 +80,17 @@ void Monster::Update(float dt)
     if (m_elapsedTime >= m_frameTime)
     {
         m_elapsedTime = 0.f;
-        m_currentFrame++;
 
         const std::vector<sf::IntRect>* currentFrames = nullptr;
         const sf::Texture* currentTex = nullptr;
 
-
         switch (m_state)
         {
             case State::Idle: 
-                // Maintain direction and scale even when idle
-                if (m_direction > 0) {
-                    m_sprite.setScale({-2.f, 2.f}); 
-                } 
-                else {
-                    m_sprite.setScale({2.f, 2.f}); 
-                }
                 currentFrames = &m_idleFrames; 
                 currentTex = &m_idleTexture; 
                 break;
             case State::Walk: 
-                if (m_direction > 0) {
-                    m_sprite.setScale({-2.f, 2.f}); // Maintain the 2x scale from GamePlay
-                } 
-                else {
-                    m_sprite.setScale({2.f, 2.f}); // Maintain the 2x scale from GamePlay
-                }
                 currentFrames = &m_walkFrames; 
                 currentTex = &m_walkTexture; 
                 break;
@@ -127,15 +112,30 @@ void Monster::Update(float dt)
                 break;
         }
 
-        if (currentFrames && !currentFrames->empty())
+        
+        if (!currentFrames || currentFrames->empty())
+            return;
+
+        // Stop incrementing if it's death  on last frame
+        if (m_state == State::Death && m_currentFrame >= (int)(currentFrames->size() - 1))
         {
-            if (m_currentFrame >= (int)currentFrames->size())
-                m_currentFrame = 0;
             m_sprite.setTexture(*currentTex);
             m_sprite.setTextureRect((*currentFrames)[m_currentFrame]);
+            return;
         }
+
+        m_currentFrame++;
+
+        if (m_currentFrame >= (int)currentFrames->size())
+        {
+            m_currentFrame = 0;
+        }
+
+        m_sprite.setTexture(*currentTex);
+        m_sprite.setTextureRect((*currentFrames)[m_currentFrame]);
     }
 }
+
 
 void Monster::Draw(sf::RenderWindow& window)
 {

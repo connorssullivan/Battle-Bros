@@ -60,6 +60,7 @@ class GamePlay : public Engine::State
         void Draw() override;
         void Pause() override;
         void Start() override;
+        void CheckMonsterHit();
 
     private:
         void UpdateCamera();
