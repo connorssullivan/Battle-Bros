@@ -444,7 +444,6 @@ void GamePlay::Update(sf::Time deltaTime)
             if (checkMonsterAttack()) {
                 // TODO: Monster Attack
                 m_player->kill();
-                //To do add a delay
                 if (m_player->getDidDeathEnd())
                     m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
             }
@@ -594,6 +593,8 @@ bool GamePlay::checkMonsterAttack()
     // Use monster's bottom position instead of center for more realistic attack detection
     sf::Vector2f monsterAttackPoint = {monsterBounds.position.x + monsterBounds.size.x / 2.f, 
                                        monsterBounds.position.y + monsterBounds.size.y};
+
+    
     sf::Vector2f playerCenter = playerBounds.position + (playerBounds.size / 2.f);
 
     // Calculate horizontal and vertical distances
@@ -609,6 +610,19 @@ bool GamePlay::checkMonsterAttack()
                               (dy * dy) / (attackRadiusY * attackRadiusY);
     
     if (normalizedDistance < 1.0f) {
+
+        // If monster is on right 
+        if (dx > 0 && !m_monster->GetIsFaceingRight())
+        {
+            m_monster->Flip();
+        }
+
+        // If monster is on left
+        if (dx < 0 && m_monster->GetIsFaceingRight())
+        {
+            m_monster->Flip();
+        }
+
         m_monster->SetState(Monster::State::Attack1);
         return true;
     }

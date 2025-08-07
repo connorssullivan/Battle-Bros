@@ -11,7 +11,6 @@ public:
 private:
     sf::Sprite m_sprite;
     
-    // Textures (one per animation type)
     const sf::Texture& m_idleTexture;
     const sf::Texture& m_walkTexture;
     const sf::Texture& m_attack1Texture;
@@ -19,7 +18,7 @@ private:
     const sf::Texture& m_hurtTexture;
     const sf::Texture& m_deathTexture;
 
-    // Animation frames for each animation
+    
     std::vector<sf::IntRect> m_idleFrames;
     std::vector<sf::IntRect> m_walkFrames;
     std::vector<sf::IntRect> m_attack1Frames;
@@ -34,7 +33,7 @@ private:
     State m_state;
     bool m_facingRight;
 
-    // Patrol behavior
+    
     float m_leftBound;
     float m_rightBound;
     float m_speed;
@@ -58,6 +57,8 @@ public:
     void Attack2();
     void Hurt();
     void Die();
+    void Flip();
 
     sf::Sprite& GetSprite();
+    bool GetIsFaceingRight(){return m_facingRight;};
 };

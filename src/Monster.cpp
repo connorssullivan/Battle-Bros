@@ -58,9 +58,23 @@ void Monster::Update(float dt)
         pos.x += m_speed * m_direction * dt;
         m_sprite.setPosition(pos);
 
-        if (pos.x < m_leftBound) m_direction = 1.f;
-        if (pos.x > m_rightBound) m_direction = -1.f;
+        if (pos.x < m_leftBound) 
+        {
+            m_direction = 1.f;
+            m_facingRight = false;
+        }
+
+        if (pos.x > m_rightBound) 
+        {
+            m_direction = -1.f;
+            m_facingRight = true;
+        }
     }
+
+    if (m_direction > 0)
+        m_sprite.setScale({-2.f, 2.f});
+    else
+        m_sprite.setScale({2.f, 2.f});
 
     // Animation update
     if (m_elapsedTime >= m_frameTime)
@@ -95,10 +109,22 @@ void Monster::Update(float dt)
                 currentFrames = &m_walkFrames; 
                 currentTex = &m_walkTexture; 
                 break;
-            case State::Attack1: currentFrames = &m_attack1Frames; currentTex = &m_attack1Texture; break;
-            case State::Attack2: currentFrames = &m_attack2Frames; currentTex = &m_attack2Texture; break;
-            case State::Hurt: currentFrames = &m_hurtFrames; currentTex = &m_hurtTexture; break;
-            case State::Death: currentFrames = &m_deathFrames; currentTex = &m_deathTexture; break;
+            case State::Attack1: 
+                currentFrames = &m_attack1Frames; 
+                currentTex = &m_attack1Texture; 
+                break;
+            case State::Attack2: 
+                currentFrames = &m_attack2Frames; 
+                currentTex = &m_attack2Texture; 
+                break;
+            case State::Hurt: 
+                currentFrames = &m_hurtFrames; 
+                currentTex = &m_hurtTexture; 
+                break;
+            case State::Death: 
+                currentFrames = &m_deathFrames; 
+                currentTex = &m_deathTexture; 
+                break;
         }
 
         if (currentFrames && !currentFrames->empty())
@@ -134,4 +160,11 @@ void Monster::Die()     { SetState(State::Death); }
 sf::Sprite& Monster::GetSprite()
 {
     return m_sprite;
+}
+
+
+void Monster::Flip()
+{
+    if (m_state == State::Walk)
+        m_direction *= -1.f; // Reverse direction
 }
