@@ -222,7 +222,8 @@ void GamePlay::Init()
     const sf::Texture& dudeJumpTex = m_context->m_assets->getTexture(BLUE_DUDE_JUMP);
     const sf::Texture& rockTex = m_context->m_assets->getTexture(ROCK);
     const sf::Texture& dudeThrowTex = m_context->m_assets->getTexture(BLUE_DUDE_THROW);
-    m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, rockTex, level_width);
+    const sf::Texture& dudeDeathTex = m_context->m_assets->getTexture(BLUE_DUDE_DEATH);
+    m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, dudeDeathTex, rockTex, level_width);
     m_player->SetPosition(200, Config::SCREEN_HEIGHT - 32.f);
 
 
@@ -272,6 +273,9 @@ void GamePlay::InitTextures()
 
     std::string blueDudeThrowPath = "assets/textures/charecters/blue_dude/blue_dude_throw.png";
     m_context->m_assets->AddTexture(BLUE_DUDE_THROW, blueDudeThrowPath);
+
+    std::string blueDudeDeathPath = "assets/textures/charecters/blue_dude/blue_dude_death.png";
+    m_context->m_assets->AddTexture(BLUE_DUDE_DEATH, blueDudeDeathPath);
 
     std::string rockPath = "assets/textures/objects/rock.png";
     m_context->m_assets->AddTexture(ROCK, rockPath);
@@ -586,7 +590,7 @@ bool GamePlay::checkMonsterAttack()
     sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
     sf::Vector2f playerCenter = playerBounds.position + (playerBounds.size / 2.f);
 
-    // This can calculate attaZZ
+    // This can calculate atta
     float dx = monsterCenter.x - playerCenter.x;
     float dy = monsterCenter.y - playerCenter.y;
     float distance = std::sqrt(dx * dx + dy * dy);

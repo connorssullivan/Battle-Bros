@@ -8,5 +8,5 @@ class BlueDude : public Character
     private:
 
     public:
-        BlueDude(const sf::Texture& idleText, const sf::Texture& walkTex, const sf::Texture& jumpText, const sf::Texture& throwText,const sf::Texture& rockText, int levelWidth);
+        BlueDude(const sf::Texture& idleText, const sf::Texture& walkTex, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& deathText, const sf::Texture& rockText, int levelWidth);
 };

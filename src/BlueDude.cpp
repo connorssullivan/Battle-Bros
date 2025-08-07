@@ -2,8 +2,8 @@
 
 
 
-BlueDude::BlueDude(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText, int levelWidth) 
-: Character (idleText, walkText, jumpText, throwText, rockText, levelWidth)
+BlueDude::BlueDude(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& deathText, const sf::Texture& rockText, int levelWidth) 
+: Character (idleText, walkText, jumpText, throwText, deathText,rockText, levelWidth)
 {
     // Set idle frames (4 frames, each 32x32)
     m_idleFrames.push_back(sf::IntRect({0, 0}, {32, 32}));
@@ -34,6 +34,11 @@ BlueDude::BlueDude(const sf::Texture& idleText, const sf::Texture& walkText, con
     m_throwFrames.push_back(sf::IntRect({32, 0}, {32, 32}));
     m_throwFrames.push_back(sf::IntRect({64, 0}, {32, 32}));
     m_throwFrames.push_back(sf::IntRect({96, 0}, {32, 32}));
+
+    // Death frames
+    for (int i=0; i < 8; i++)
+        m_deathFrames.push_back(sf::IntRect({i * 32, 0}, {32, 32}));
+
 
     m_sprite.setTextureRect(m_idleFrames[0]);
 

@@ -30,12 +30,14 @@ class Character
         bool m_isJumping;
         bool m_isThrow;
         bool m_isThrowingAnimation;
+        bool m_isDead;
 
         RockState m_rockState;
 
         const sf::Texture& m_walkTexture;
         const sf::Texture& m_idleTexture;
         const sf::Texture& m_jumpText;
+        const sf::Texture& m_deathText;
         const sf::Texture& m_rockTex;
         const sf::Texture& m_throwTex;
 
@@ -50,13 +52,14 @@ class Character
         std::vector<sf::IntRect> m_walkFrames;
         std::vector<sf::IntRect> m_jumpFrames;
         std::vector<sf::IntRect> m_throwFrames;
+        std::vector<sf::IntRect> m_deathFrames;
 
         
         
         
 
     public:
-        Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& rockText, int levelWidth);
+        Character(const sf::Texture& idleText, const sf::Texture& walkText, const sf::Texture& jumpText, const sf::Texture& throwText, const sf::Texture& deathText, const sf::Texture& rockText, int levelWidth);
         virtual ~Character() = default;
 
         virtual void Update(float dt, bool isWalking, const std::vector<sf::Sprite*>& platforms);
@@ -64,6 +67,7 @@ class Character
 
         void jump();
         void throwRock();
+        void kill();
 
         void SetPosition(float x, float y);
         void setIsWalking(bool isWalking){m_isWalking = isWalking;};
@@ -86,7 +90,7 @@ class Character
         bool checkPlayerCollisionDuringMovement(const std::vector<sf::Sprite*>& platforms, float directionX);
         bool checkVerticalCollision(const std::vector<sf::Sprite*>& platforms, sf::Vector2f& landingPosition);
         bool isOnPlatform(const std::vector<sf::Sprite*>& platforms);
-
+        
 
 };
 
