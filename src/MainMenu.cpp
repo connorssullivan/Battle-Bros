@@ -19,8 +19,6 @@ MainMenu::~MainMenu()
 void MainMenu::Init() 
 {
     // Initialize main background using the level background
-    std::string bgPath = "assets/textures/backgrounds/Background_01.png";
-    m_context->m_assets->AddTexture(MAIN_BACKGROUND, bgPath);
     const sf::Texture& mainBGTex = m_context->m_assets->getTexture(MAIN_BACKGROUND);
     m_background = std::make_unique<sf::Sprite>(mainBGTex);
 
@@ -34,8 +32,6 @@ void MainMenu::Init()
     });
 
     // Initialize floor
-    std::string groundPath = "assets/textures/platforms/ground.png";
-    m_context->m_assets->AddTexture(GROUND, groundPath);
     const sf::Texture& groundTex = m_context->m_assets->getTexture(GROUND);
     m_floor = std::make_unique<sf::Sprite>(groundTex);
     
@@ -91,15 +87,13 @@ void MainMenu::Init()
     m_rockTargetPos = {700.f, 800.f};
     m_rockVelocity = {(m_rockTargetPos.x - m_rockStartPos.x) / 60.f, -200.f}; // 60 frames to reach target
 
-    std::string fontPath = "assets/fonts/Bitcount_Grid_Double/BitcountGridDouble.ttf";
-    m_context->m_assets->AddFont(MAIN_FONT, fontPath);
 
     const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
     // Game Title
-    m_gameTitle = sf::Text(font, "Main Menu", 30);
+    m_gameTitle = sf::Text(font, "The Blue Dude", 30);
     m_gameTitle->setFont(font);
-    m_gameTitle->setString("Pup Chomp");
+    m_gameTitle->setString("The Blue Dude");
     m_gameTitle->setFillColor(sf::Color::Red);
     
     sf::FloatRect bounds = m_gameTitle->getLocalBounds();
@@ -112,7 +106,7 @@ void MainMenu::Init()
 
     m_gameTitle->setPosition(sf::Vector2f(
         m_context->m_window->getSize().x / 2.0f,
-        m_context->m_window->getSize().y / 2.0f - 100.f
+        m_context->m_window->getSize().y / 2.0f - 300.f
     ));
 
     // Levels Button

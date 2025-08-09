@@ -234,18 +234,30 @@ void GamePlay::Init()
     const sf::Texture& monsterHurtTex = m_context->m_assets->getTexture(MONSTER_HURT);
     const sf::Texture& monsterDeathTex = m_context->m_assets->getTexture(MONSTER_DEATH);
     
-    // Set patrol bounds around the staircase area
-    float monsterLeftBound = 1400.f;
-    float monsterRightBound = 1600.f;
+    // Create 5 monsters at different locations
+    std::vector<std::pair<float, float>> monsterPositions = {
+        {1450.f, 565.f},  
+        {350.f, 360.f},   // Moved up (lower Y = higher position)
+        
+    };
     
-    m_monster = std::make_unique<Monster>(monsterIdleTex, monsterWalkTex, monsterAttack1Tex, 
-                                         monsterAttack2Tex, monsterHurtTex, monsterDeathTex,
-                                         monsterLeftBound, monsterRightBound);
+    std::vector<std::pair<float, float>> monsterBounds = {
+        {1400.f, 1600.f}, 
+        {350.f, 400.f},   // Patrol bounds for the ground platform (covers the 4-brick platform)
+        
+    };
     
-    // Position the monster near the staircase
-    m_monster->GetSprite().setPosition({1450.f, 565.f});
-    m_monster->GetSprite().setScale({2.0f, 2.0f}); 
-    m_monster->SetState(Monster::State::Walk); // Start in walking state
+    for (int i = 0; i < 2; ++i) {
+        auto monster = std::make_unique<Monster>(monsterIdleTex, monsterWalkTex, monsterAttack1Tex, 
+                                                monsterAttack2Tex, monsterHurtTex, monsterDeathTex,
+                                                monsterBounds[i].first, monsterBounds[i].second);
+        
+        monster->GetSprite().setPosition(sf::Vector2f(monsterPositions[i].first, monsterPositions[i].second));
+        monster->GetSprite().setScale({2.0f, 2.0f});
+        monster->SetState(Monster::State::Walk);
+        
+        m_monsters.push_back(std::move(monster));
+    }
 
     // === HIGH PLATFORMS ===
     // Very high platform for advanced jumping
@@ -540,16 +552,18 @@ void GamePlay::Update(sf::Time deltaTime)
             m_player->pickupRock();
         }
         
-        // Update monster
-        if (m_monster) {
-            m_monster->Update(deltaTime.asSeconds());
-            CheckMonsterHit();
-            // Check if monster attacks player
-            if (checkMonsterAttack() && m_monster->getState() != Monster::State::Death) {
-                // TODO: Monster Attack
-                m_player->kill();
-                if (m_player->getDidDeathEnd())
-                    m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+        // Update monsters
+        for (auto& monster : m_monsters) {
+            if (monster) {
+                monster->Update(deltaTime.asSeconds());
+                CheckMonsterHit();
+                // Check if monster attacks player
+                if (checkMonsterAttack(monster.get()) && monster->getState() != Monster::State::Death) {
+                    // TODO: Monster Attack
+                    m_player->kill();
+                    if (m_player->getDidDeathEnd())
+                        m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+                }
             }
         }
         
@@ -596,8 +610,12 @@ void GamePlay::Draw()
     if (m_star)
         m_star->Draw(*m_context->m_window);
     
-    if (m_monster) 
-        m_monster->Draw(*m_context->m_window);
+    // Draw all monsters
+    for (auto& monster : m_monsters) {
+        if (monster) {
+            monster->Draw(*m_context->m_window);
+        }
+    }
     
     
     m_player->Draw(*m_context->m_window);
@@ -689,13 +707,13 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
     return platforms;
 }
 
-bool GamePlay::checkMonsterAttack()
+bool GamePlay::checkMonsterAttack(Monster* monster)
 {
-    if (!m_monster || m_monster->getState() == Monster::State::Death || m_monster->getState() == Monster::State::Attack1 || m_monster->getState() == Monster::State::Attack2) 
+    if (!monster || monster->getState() == Monster::State::Death || monster->getState() == Monster::State::Attack1 || monster->getState() == Monster::State::Attack2) 
         return false;
 
     // Get bounds
-    sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
+    sf::FloatRect monsterBounds = monster->GetSprite().getGlobalBounds();
     sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
 
     // Use monster's bottom position instead of center for more realistic attack detection
@@ -720,18 +738,18 @@ bool GamePlay::checkMonsterAttack()
     if (normalizedDistance < 1.0f) {
 
         // If monster is on right 
-        if (dx > 0 && !m_monster->GetIsFaceingRight())
+        if (dx > 0 && !monster->GetIsFaceingRight())
         {
-            m_monster->Flip();
+            monster->Flip();
         }
 
         // If monster is on left
-        if (dx < 0 && m_monster->GetIsFaceingRight())
+        if (dx < 0 && monster->GetIsFaceingRight())
         {
-            m_monster->Flip();
+            monster->Flip();
         }
 
-        m_monster->Attack1();
+        monster->Attack1();
         return true;
     }
 
@@ -746,27 +764,32 @@ void GamePlay::CheckMonsterHit()
     }
     
     sf::FloatRect rockBounds = m_player->getRock().getGlobalBounds();
-    sf::FloatRect monsterBounds = m_monster->GetSprite().getGlobalBounds();
     
-    sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
-    sf::Vector2f rockCenter = rockBounds.position + (rockBounds.size / 2.f);
+    // Check collision with all monsters
+    for (auto& monster : m_monsters) {
+        if (monster && monster->getState() != Monster::State::Death) {
+            sf::FloatRect monsterBounds = monster->GetSprite().getGlobalBounds();
+            
+            sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);
+            sf::Vector2f rockCenter = rockBounds.position + (rockBounds.size / 2.f);
 
-    float dx = monsterCenter.x - rockCenter.x;
-    float dy = monsterCenter.y - rockCenter.y;
-    
-    // Define elliptical attack area (taller than wide)
-    float attackRadiusX = 60.f;  
-    float attackRadiusY = 60.f;
+            float dx = monsterCenter.x - rockCenter.x;
+            float dy = monsterCenter.y - rockCenter.y;
+            
+            // Define elliptical attack area (taller than wide)
+            float attackRadiusX = 60.f;  
+            float attackRadiusY = 60.f;
 
-    float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
-                              (dy * dy) / (attackRadiusY * attackRadiusY);
+            float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
+                                      (dy * dy) / (attackRadiusY * attackRadiusY);
 
-    if (normalizedDistance < 1.0f) {
-        
-        m_monster->SetState(Monster::State::Death);
-        
-        
-        m_player->resetRock();
+            if (normalizedDistance < 1.0f) {
+                std::cout << "Monster hit by rock!" << std::endl;
+                monster->SetState(Monster::State::Death);
+                m_player->resetRock();
+                return; // Exit after hitting one monster
+            }
+        }
     }
 }
 
@@ -789,7 +812,12 @@ bool GamePlay::checkGotStar()
 
     if (normalizedDistance < 1.0f) {
         std::cout << "Player got the star!" << std::endl;
-        m_monster->SetState(Monster::State::Death);
+        // Kill all monsters when player gets the star
+        for (auto& monster : m_monsters) {
+            if (monster) {
+                monster->SetState(Monster::State::Death);
+            }
+        }
         m_score += 100;
         m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
         return true;

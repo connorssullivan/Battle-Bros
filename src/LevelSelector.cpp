@@ -166,7 +166,7 @@ void LevelSelector::ProcessInput()
 
 void LevelSelector::Update(sf::Time deltaTime)
 {
-    // No continuous updates needed
+    
 }
 
 void LevelSelector::Draw()
@@ -193,10 +193,10 @@ void LevelSelector::Draw()
 
 void LevelSelector::Pause()
 {
-    // Not needed for this screen
+    
 }
 
 void LevelSelector::Start()
 {
-    // Not needed for this screen
+    
 } 

@@ -15,6 +15,8 @@ Engine::AssetMan::~AssetMan()
 
 void Engine::AssetMan::AddTexture(int id, std::string& filePath, bool wantRepeated)
 {
+    // Create a new texture and load it from the file
+    
     auto texture = std::make_unique<sf::Texture>();
 
     if (texture->loadFromFile(filePath))
@@ -27,6 +29,8 @@ void Engine::AssetMan::AddTexture(int id, std::string& filePath, bool wantRepeat
 
 void Engine::AssetMan::AddFont(int id, std::string& filepath)
 {
+    // Create a new font and load it from the file
+    
     auto font = std::make_unique<sf::Font>();
 
     if (font->openFromFile(filepath))

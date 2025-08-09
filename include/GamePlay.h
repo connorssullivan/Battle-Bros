@@ -40,7 +40,7 @@ class GamePlay : public Engine::State
         std::optional<sf::Text> m_scoreText;
         std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
         std::vector<std::unique_ptr<Coin>> m_coins;
-        std::unique_ptr<Monster> m_monster;
+        std::vector<std::unique_ptr<Monster>> m_monsters;
         std::unique_ptr<Star> m_star;
 
 
@@ -67,6 +67,6 @@ class GamePlay : public Engine::State
     private:
         void UpdateCamera();
         std::vector<sf::Sprite*> getPlatforms();  // Get all platform sprites for collision
-        bool checkMonsterAttack();
+        bool checkMonsterAttack(Monster* monster);
         bool checkGotStar();
 };

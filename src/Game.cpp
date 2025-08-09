@@ -6,7 +6,7 @@ Game::Game()
 : m_context { std::make_shared<Context>() }
 {
 
-    m_context->m_window->create(sf::VideoMode({Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT}), "Pup Chomp", sf::Style::Default);
+    m_context->m_window->create(sf::VideoMode({Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT}), "The Blue Dude", sf::Style::Default);
     
     InitTextures();
 
@@ -132,4 +132,8 @@ void Game::InitTextures()
 
     std::string starPath = "assets/textures/objects/Star.png";
     m_context->m_assets->AddTexture(STAR, starPath);
+
+    // Fonts
+    std::string fontPath = "assets/fonts/Bitcount_Grid_Double/BitcountGridDouble.ttf";
+    m_context->m_assets->AddFont(MAIN_FONT, fontPath);
 }

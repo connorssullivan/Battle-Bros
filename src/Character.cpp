@@ -14,8 +14,8 @@ Character::Character(const sf::Texture& idleText, const sf::Texture& walkText, c
     m_sprite.setOrigin({16.f, 16.f});
     
     // Initialize rock sprite
-    m_rock.setOrigin({4.f, 4.f});  // Center the rock (8x8 texture)
-    m_rock.setTextureRect(sf::IntRect({0, 0}, {8, 8}));  // Set correct texture rectangle
+    m_rock.setOrigin({4.f, 4.f});  // Center the rock,  8x8 texture
+    m_rock.setTextureRect(sf::IntRect({0, 0}, {8, 8}));  // Set correct texture rec
 }
 
 
@@ -24,44 +24,48 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
 {
     m_isWalking = isWalking;
 
-    // Store original position to revert if collision occurs
     sf::Vector2f originalPos = m_sprite.getPosition();
     if (m_isDead)
     {
         //m_deathAnimStarted = true;
     }
+
     // Apply physics and movement 
     else if (!m_isOnGround) 
     {
-        // Jumping/falling physics
-        m_velocity.y += m_gravity * dt;
+        m_velocity.y += m_gravity * dt; // Jumping/falling physics
         
-        // Move horizontally first, check collision
-        if (m_velocity.x != 0.f) {
+        // Move horizontally first, then check collision
+        if (m_velocity.x != 0.f) 
+        {
             sf::Vector2f horizontalMovement = {m_velocity.x * dt, 0.f};
             m_sprite.move(horizontalMovement);
             
-            // Check horizontal collision and revert if needed
-            if (checkPlayerCollisionDuringMovement(platforms, m_velocity.x > 0 ? 1.f : -1.f)) {
+            // Check horizontal collision 
+            if (checkPlayerCollisionDuringMovement(platforms, m_velocity.x > 0 ? 1.f : -1.f)) 
+            {
                 m_sprite.setPosition({originalPos.x, m_sprite.getPosition().y});
-                m_velocity.x = 0.f; // Stop horizontal movement
+                m_velocity.x = 0.f; // Come to stop
             }
         }
         
-        // Move vertically, check collision
         sf::Vector2f originalPosBeforeVertical = m_sprite.getPosition();
         sf::Vector2f verticalMovement = {0.f, m_velocity.y * dt};
         m_sprite.move(verticalMovement);
 
         // Check vertical collision (ceiling or floor)
         sf::Vector2f landingPosition;
-        if (checkVerticalCollision(platforms, landingPosition)) {
-            if (m_velocity.y < 0.f) {
-                // Hit ceiling - revert position
+        if (checkVerticalCollision(platforms, landingPosition)) 
+        {
+            if (m_velocity.y < 0.f) 
+            {
+                // Hit ceiling 
                 m_sprite.setPosition(originalPosBeforeVertical);
                 m_velocity.y = 0.f;
-            } else {
-                // Landing on platform - position character on top
+            } 
+            else 
+            {
+                // Landing on platform 
                 m_sprite.setPosition(landingPosition);
                 m_velocity.y = 0.f;
                 m_isJumping = false;
@@ -69,40 +73,53 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
             }
         }
 
-        // Check if still on ground after movement (only if not already determined to be on ground)
-        if (m_isOnGround && !isOnPlatform(platforms)) {
-            // Check landing on ground level (fallback)
+        // Check if still on ground after movement 
+        if (m_isOnGround && !isOnPlatform(platforms)) 
+        {
+            // Check landing on ground level 
             float groundLevel = Config::SCREEN_HEIGHT - 32.f; 
-            if (m_sprite.getPosition().y >= groundLevel) {
+            if (m_sprite.getPosition().y >= groundLevel) 
+            {
                 m_sprite.setPosition({m_sprite.getPosition().x, groundLevel});
                 m_velocity.y = 0.f;
                 m_isJumping = false;
                 m_isOnGround = true;
-            } else {
+            } 
+            
+            else 
+            {
                 // Not on any platform, start falling
                 m_isOnGround = false;
             }
-        } else if (!m_isOnGround && isOnPlatform(platforms)) {
+        } 
+        
+        // Just landed on a platform, make sure were grounded
+        else if (!m_isOnGround && isOnPlatform(platforms)) 
+        {
             // Just landed on a platform, make sure we're grounded
             m_isOnGround = true;
             m_isJumping = false;
             m_velocity.y = 0.f;
         }
     }
-    else if (isWalking) {
-        // Walking on ground - check collision before moving
+
+    else if (isWalking) 
+    {
+        // Walking on ground
         sf::Vector2f movement = m_velocity * dt;
         m_sprite.move(movement);
         
         // Check collision and revert if needed
         float direction = m_velocity.x > 0 ? 1.f : (m_velocity.x < 0 ? -1.f : 0.f);
-        if (direction != 0.f && checkPlayerCollisionDuringMovement(platforms, direction)) {
+        if (direction != 0.f && checkPlayerCollisionDuringMovement(platforms, direction)) 
+        {
             m_sprite.setPosition(originalPos);
             m_velocity.x = 0.f; // Stop movement
         }
         
         // Check if walked off a platform
-        if (m_isOnGround && !isOnPlatform(platforms)) {
+        if (m_isOnGround && !isOnPlatform(platforms)) 
+        {
             float groundLevel = Config::SCREEN_HEIGHT - 32.f; 
             if (m_sprite.getPosition().y < groundLevel - 5.f) { // Some tolerance before falling
                 m_isOnGround = false; // Start falling
@@ -163,7 +180,7 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
                 m_sprite.setTextureRect(m_throwFrames[m_currentFrame]);
             }
 
-            // Stop throw animation after one cycle
+            // Stop throw animation after first cycle
             if (m_throwAnimTime >= m_throwAnimDuration)
             {
                 m_isThrowingAnimation = false;
@@ -209,6 +226,8 @@ void Character::Update(float dt, bool isWalking, const std::vector<sf::Sprite*>&
 
 void Character::Draw(sf::RenderWindow& window)
 {
+    // Draw the charecter, and the rock
+
     window.draw(m_sprite);
 
     if (m_rockState != RockState::None)
@@ -237,6 +256,7 @@ void Character::jump()
 
 void Character::throwRock()
 {
+    // If the player has the rock, throw it
     if (m_rockAmmo > 0 && m_rockState == RockState::None) 
     {
         m_rockState = RockState::Flying;
@@ -256,18 +276,19 @@ void Character::throwRock()
 }
 
 
-// Collisions
+// Collisions///
 
 bool Character::checkRockCollision(const sf::Sprite& otherSprite)
 {
 
+    // Get bounds of rock and what ecer it's coliding with
     sf::FloatRect rockBounds = m_rock.getGlobalBounds();
     sf::FloatRect otherBounds = otherSprite.getGlobalBounds();    
     
     sf::Vector2f rockPos = m_rock.getPosition();
     sf::Vector2f otherPos = otherSprite.getPosition();
     
-    // Check if rock is within the other sprite's bounds
+    // Check if rock is within the other sprites bounds
     return (rockPos.x >= otherPos.x - 8 && rockPos.x <= otherPos.x + 32 &&
             rockPos.y >= otherPos.y - 8 && rockPos.y <= otherPos.y + 32);
 }
@@ -276,87 +297,95 @@ void Character::updateRockPhysics(float dt, const std::vector<sf::Sprite*>& plat
 {
     if (m_rockState == RockState::Flying)
     {
+        // Integrate motion
         m_rockVelocity.y += m_gravity * dt;
+        const sf::FloatRect prevRockBounds = m_rock.getGlobalBounds();
         m_rock.move(m_rockVelocity * dt);
 
-        auto rockBounds = m_rock.getGlobalBounds();
+        const sf::FloatRect rockBounds = m_rock.getGlobalBounds();
 
         for (auto* platform : platforms)
         {
-            auto platformBounds = platform->getGlobalBounds();
+            const sf::FloatRect platformBounds = platform->getGlobalBounds();
 
             if (auto intersection = rockBounds.findIntersection(platformBounds))
             {
+                const float platformTop = platformBounds.position.y;
+                const float platformBottom = platformBounds.position.y + platformBounds.size.y;
+                const float platformLeft = platformBounds.position.x;
+                const float platformRight = platformBounds.position.x + platformBounds.size.x;
 
-                // TODO: find better way to do this
-                bool isHorizontalWall = platformBounds.size.y < platformBounds.size.x;
-                
-                if (isHorizontalWall)
+                const float prevTop = prevRockBounds.position.y;
+                const float prevBottom = prevRockBounds.position.y + prevRockBounds.size.y;
+                const float prevLeft = prevRockBounds.position.x;
+                const float prevRight = prevRockBounds.position.x + prevRockBounds.size.x;
+
+                const float rockHalfW = rockBounds.size.x / 2.0f;
+                const float rockHalfH = rockBounds.size.y / 2.0f;
+
+                const bool falling = m_rockVelocity.y >= 0.0f;
+                const bool rising = m_rockVelocity.y < 0.0f;
+
+                // Horizontal overlap check
+                const bool horizontallyOverlapping =
+                    rockBounds.position.x + rockBounds.size.x > platformLeft &&
+                    rockBounds.position.x < platformRight;
+
+                // Vertical overlap check
+                const bool verticallyOverlapping =
+                    rockBounds.position.y + rockBounds.size.y > platformTop &&
+                    rockBounds.position.y < platformBottom;
+
+                // Landing on top: coming from above and overlapping horizontally
+                if (falling && prevBottom <= platformTop && horizontallyOverlapping)
                 {
-                    // For horizontal walls, only the bottom wall should support the rock
-                    // Top wall should make the rock fall down
-                    if (platformBounds.position.y > Config::SCREEN_HEIGHT / 2)
-                    {
-                        // This is the bottom wall: rock can land on it
-                        float platformTop = platformBounds.position.y;
-
-                        float rock_height {4.f};
-                        m_rock.setPosition({
-                            m_rock.getPosition().x,
-                            platformTop - (rock_height/2)   
-                        });
-                        m_rockVelocity = {0.f, 0.f};
-                        m_rockState = RockState::Landed;
-                    }
-
-                    else
-                    {
-                        m_rockVelocity.y = std::abs(m_rockVelocity.y) * 0.9f; // Bounce with reduced velocity
-                        m_rockVelocity.x *= 0.8f; 
-                    }
-                }
-                else
-                {
-                    // Vertical wall (left/right) - position rock on the side
-                    float rockCenterX = m_rock.getPosition().x;
-                    float wallLeft = platformBounds.position.x;
-                    float wallRight = platformBounds.position.x + platformBounds.size.x;
-                    
-
-                    
-                    // Determine which side of the wall the rock hit
-                    if (rockCenterX < (wallLeft + wallRight) / 2)
-                    {
-                        // Rock hit left side of wall - position it right at the left edge
-                        float newX = wallLeft; 
-
-                        // Make sure it doesn't go outside the world bounds
-                        newX = std::max(newX, 0.f); 
-                        m_rock.setPosition({
-                            newX,
-                            m_rock.getPosition().y
-                        });
-                    }
-                    else
-                    {
-                        // Rock hit right side of wall - position it right at the right edge
-                        float newX = wallRight;  
-
-                        // Make sure it doesn't go outside the world bounds
-                        newX = std::min(newX, static_cast<float>(Config::SCREEN_WIDTH));  
-                        m_rock.setPosition({
-                            newX,
-                            m_rock.getPosition().y
-                        });
-                    }
-                    
+                    m_rock.setPosition({
+                        m_rock.getPosition().x,
+                        platformTop - rockHalfH
+                    });
                     m_rockVelocity = {0.f, 0.f};
                     m_rockState = RockState::Landed;
+                    return;
                 }
-                return;
+
+                // Hitting the bottom (ceiling for the rock): coming from below while rising
+                if (rising && prevTop >= platformBottom && horizontallyOverlapping)
+                {
+                    m_rock.setPosition({
+                        m_rock.getPosition().x,
+                        platformBottom + rockHalfH
+                    });
+                    m_rockVelocity.y = std::abs(m_rockVelocity.y) * 0.9f; // bounce down slightly
+                    m_rockVelocity.x *= 0.8f;
+                    return;
+                }
+
+                // Side collisions: coming from left/right while overlapping vertically
+                if (verticallyOverlapping)
+                {
+                    const float centerX = m_rock.getPosition().x;
+                    const float platformCenterX = platformBounds.position.x + platformBounds.size.x / 2.0f;
+                    if (centerX < platformCenterX)
+                    {
+                        // Hit left side
+                        m_rock.setPosition({ platformLeft - rockHalfW, m_rock.getPosition().y });
+                    }
+
+                    else
+                    {
+                        // Hit right side 
+                        m_rock.setPosition({ platformRight + rockHalfW, m_rock.getPosition().y });
+                    }
+
+                    // Stop
+                    m_rockVelocity = {0.f, 0.f};
+                    m_rockState = RockState::Landed;
+                    return;
+                }
             }
         }
 
+        // Despawn if way off screen
         if (m_rock.getPosition().y > Config::SCREEN_HEIGHT + 50 ||
             m_rock.getPosition().x < -50 || m_rock.getPosition().x > m_levelWidth + 50)
         {
@@ -364,68 +393,38 @@ void Character::updateRockPhysics(float dt, const std::vector<sf::Sprite*>& plat
             m_rockVelocity = {0.f, 0.f};
         }
     }
+
+    // Landing
     else if (m_rockState == RockState::Landed)
     {
-        auto rockBounds = m_rock.getGlobalBounds();
+        const auto rockBounds = m_rock.getGlobalBounds();
         bool supported = false;
+        const float epsilon = 2.0f; 
 
         for (auto* platform : platforms)
         {
-            auto platformBounds = platform->getGlobalBounds();
-            const float epsilon = 2.0f; // Allow tiny float error
+            const auto platformBounds = platform->getGlobalBounds();
+            const float platformTop = platformBounds.position.y;
 
-            // Determine if this is a horizontal or vertical wall
-            // TODO: Find better way to do this
-            bool isHorizontalWall = platformBounds.size.y < platformBounds.size.x;
-            
-            if (isHorizontalWall)
+            // Check if rock is resting on top of any platform 
+            const bool horizontallyOverlapping =
+                rockBounds.position.x + rockBounds.size.x > platformBounds.position.x &&
+                rockBounds.position.x < platformBounds.position.x + platformBounds.size.x;
+
+            const float rockBottom = rockBounds.position.y + rockBounds.size.y;
+
+            if (horizontallyOverlapping && std::abs(rockBottom - platformTop) <= epsilon)
             {
-                // Only the bottom wall should support the rock
-                if (platformBounds.position.y > Config::SCREEN_HEIGHT / 2)
-                {
-                    // Check if rock is sitting on top of bottom platform
-                    float rockBottom = rockBounds.position.y + rockBounds.size.y;
-                    float platformTop = platformBounds.position.y;
-
-                    bool horizontallyOverlapping =
-                        rockBounds.position.x + rockBounds.size.x > platformBounds.position.x &&
-                        rockBounds.position.x < platformBounds.position.x + platformBounds.size.x;
-
-                    if (horizontallyOverlapping &&
-                        std::abs(rockBottom - platformTop) <= epsilon)
-                    {
-                        supported = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                // Check if rock is stuck to the side of vertical wall
-                float rockLeft = rockBounds.position.x;
-                float rockRight = rockBounds.position.x + rockBounds.size.x;
-                float wallLeft = platformBounds.position.x;
-                float wallRight = platformBounds.position.x + platformBounds.size.x;
-
-                bool verticallyOverlapping =
-                    rockBounds.position.y + rockBounds.size.y > platformBounds.position.y &&
-                    rockBounds.position.y < platformBounds.position.y + platformBounds.size.y;
-
-                // Check if rock is touching left or right side of wall
-                if (verticallyOverlapping &&
-                    (std::abs(rockRight - wallLeft) <= epsilon || std::abs(rockLeft - wallRight) <= epsilon))
-                {
-                    supported = true;
-                    break;
-                }
+                supported = true;
+                break;
             }
         }
 
-        // If not supported, drop it again
+        // If not supported, reapply gravity
         if (!supported)
         {
             m_rockState = RockState::Flying;
-            m_rockVelocity.y = 50.f; // Small downward velocity so it continues falling
+            m_rockVelocity.y = std::max(m_rockVelocity.y, 50.f);
         }
     }
 
@@ -434,6 +433,7 @@ void Character::updateRockPhysics(float dt, const std::vector<sf::Sprite*>& plat
 
 void Character::pickupRock()
 {
+    // If rock is on the ground and player collides with it, pick it up
     if (m_rockState == RockState::Landed)
     {
         auto rockBounds = m_rock.getGlobalBounds();
@@ -473,10 +473,11 @@ bool Character::checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, 
             // Horizontal collision
             if (rect.size.x < rect.size.y)
             {
-                // If moving right & player is to the left of platform center → block
+                // If moving right & player is to the left of platform center block
                 if (directionX > 0 && playerCenter.x < platformCenter.x) 
                     return true;
-                // If moving left & player is to the right of platform center → block
+                    
+                // If moving left & player is to the right of platform center block
                 if (directionX < 0 && playerCenter.x > platformCenter.x) 
                     return true;
             }
@@ -487,16 +488,18 @@ bool Character::checkPlayerCollision(const std::vector<sf::Sprite*>& platforms, 
 
 bool Character::checkPlayerCollisionDuringMovement(const std::vector<sf::Sprite*>& platforms, float directionX)
 {
+    // Get Player Bounds
     sf::FloatRect playerBounds = m_sprite.getGlobalBounds();
     sf::Vector2f playerCenter{
         playerBounds.position.x + playerBounds.size.x / 2.f,
         playerBounds.position.y + playerBounds.size.y / 2.f
     };
     
+    // Check each platform for intersection
     for (const auto* platform : platforms)
     {
         sf::FloatRect platformBounds = platform->getGlobalBounds();
-        sf::Vector2f platformCenter{
+        sf::Vector2f platformCenter {
             platformBounds.position.x + platformBounds.size.x / 2.f,
             platformBounds.position.y + platformBounds.size.y / 2.f
         };
@@ -508,8 +511,6 @@ bool Character::checkPlayerCollisionDuringMovement(const std::vector<sf::Sprite*
             // Determine collision type based on intersection shape and movement direction
             if (directionX != 0.f) // Horizontal movement
             {
-                // Check if this is a side collision (intersection is taller than it is wide)
-                // OR if intersection area is significant enough to be considered a collision
                 bool isSideCollision = rect.size.y > rect.size.x;
                 bool isSignificantCollision = rect.size.y > playerBounds.size.y * 0.3f;
                 
@@ -527,10 +528,12 @@ bool Character::checkVerticalCollision(const std::vector<sf::Sprite*>& platforms
 {
     sf::FloatRect playerBounds = m_sprite.getGlobalBounds();
     
+
     for (const auto* platform : platforms)
     {
         sf::FloatRect platformBounds = platform->getGlobalBounds();
         
+        // Determine if there is an intersection between the platform and player
         if (auto intersection = playerBounds.findIntersection(platformBounds))
         {
             const auto& rect = *intersection;
@@ -542,18 +545,23 @@ bool Character::checkVerticalCollision(const std::vector<sf::Sprite*>& platforms
                 float platformTop = platformBounds.position.y;
                 float platformBottom = platformBounds.position.y + platformBounds.size.y;
                 
-                if (m_velocity.y > 0.f) {
-                    // Player is falling down - check if landing on top of platform
-                    if (playerBottom <= platformTop + 10.f) { // Small tolerance for landing detection
-                        // Calculate proper landing position (character on top of platform)
+                // Check if player is falling onto the platform
+                if (m_velocity.y > 0.f) 
+                {
+                    
+                    if (playerBottom <= platformTop + 10.f)  // Small tolerance for landing detection
+                    {
                         landingPosition = {m_sprite.getPosition().x, platformTop - playerBounds.size.y};
-                        return true;
+                        return true; // Hit flooor
                     }
-                } else if (m_velocity.y < 0.f) {
-                    // Player is moving up - check if hitting ceiling
+                }
+                // check if hitting ceiling
+                else if (m_velocity.y < 0.f) 
+                { 
                     float playerTop = playerBounds.position.y;
-                    if (playerTop >= platformBottom - 10.f) { // Small tolerance
-                        return true; // Hit ceiling, will revert position
+                    if (playerTop >= platformBottom - 10.f) // Small tolerance
+                    { 
+                        return true; // Hit ceiling
                     }
                 }
             }
@@ -567,6 +575,7 @@ bool Character::isOnPlatform(const std::vector<sf::Sprite*>& platforms)
     sf::FloatRect playerBounds = m_sprite.getGlobalBounds();
     float playerBottom = playerBounds.position.y + playerBounds.size.y;
     
+    // Check each platform, see if player the player is standing on it
     for (const auto* platform : platforms)
     {
         sf::FloatRect platformBounds = platform->getGlobalBounds();
@@ -575,18 +584,18 @@ bool Character::isOnPlatform(const std::vector<sf::Sprite*>& platforms)
         // Check if player is standing on top of this platform
         if (std::abs(playerBottom - platformTop) <= 5.f) // Tolerance for standing detection
         { 
-            // Check horizontal overlap
             float playerLeft = playerBounds.position.x;
             float playerRight = playerBounds.position.x + playerBounds.size.x;
             float platformLeft = platformBounds.position.x;
             float platformRight = platformBounds.position.x + platformBounds.size.x;
             
-            // Check if there's sufficient horizontal overlap
+            // Check horizontal overlap
             float overlapLeft = std::max(playerLeft, platformLeft);
             float overlapRight = std::min(playerRight, platformRight);
             float overlapWidth = overlapRight - overlapLeft;
             
-            if (overlapWidth > playerBounds.size.x * 0.3f) {
+            if (overlapWidth > playerBounds.size.x * 0.3f) 
+            {
                 return true; 
             }
         }
