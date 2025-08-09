@@ -1,28 +1,58 @@
-<div align="center">
+# 🐺 Battle Bros — 2D Platformer (C++ SFML)
 
-# Battle Bros
+<!-- Optional: replace with your own screenshot URL -->
+<!-- ![Battle Bros](https://github.com/user-attachments/assets/your-image-id) -->
 
-Arcade platformer built with modern C++ and SFML 3. Throw rocks, dodge monsters, collect coins, and chase the star.
+A modern, arcade-style platformer built in C++ with SFML. Jump across platforms, throw rocks, dodge monsters, collect coins, and chase the star.
 
-</div>
+![C++](https://img.shields.io/badge/C++-20-blue?style=for-the-badge&logo=cplusplus)
+![SFML](https://img.shields.io/badge/SFML-3.0.1-green?style=for-the-badge)
+![CMake](https://img.shields.io/badge/CMake-3.28-orange?style=for-the-badge&logo=cmake)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
----
+## 🎮 Features
 
-## Highlights
+- **Responsive Platforming**: Gravity, jump arcs, and precise horizontal/vertical collision resolution
+- **Projectile System**: Throw rocks with top/bottom/side collision handling and anti-tunneling
+- **State Management**: Clean separation between main menu, gameplay, pause, and game over
+- **Asset Management**: Centralized resource loading/caching for textures, fonts, and audio
+- **Modern C++**: C++20 codebase with RAII and smart pointers
+- **Cross-Platform**: CMake-based builds on Windows, macOS, and Linux
+- **Audio Integration**: Background music and effects
 
-- Clean C++20 codebase with a minimal engine: `State` machine, asset manager, and scene-driven gameplay
-- Deterministic-feeling platforming with gravity, jump arcs, and precise collision resolution
-- Projectile system (rocks) with top/bottom/side collision handling and anti-tunneling using previous-frame bounds
-- Smooth camera follow with configurable responsiveness
-- Simple, extensible enemy AI (patrol/attack/kill-on-star) and score/collectible systems
-- Cross-platform builds via CMake; SFML 3 fetched at configure time (no manual SDK installs required)
+## 🏗️ Architecture
 
-## Quick Start
+### Core Components
 
-Prerequisites
+- **Game Engine**: Main loop and view/camera system
+- **State Machine**: `MainMenu`, `GamePlay`, `PauseGame`, `GameOver`
+- **Asset Manager**: Texture, font, and audio loading/caching
+- **Character/BlueDude**: Movement, animation, jump, and throwing
+- **Monsters / Coins / Star**: Interactables and simple AI/collectibles
+- **Input System**: Keyboard-driven controls
 
-- Git, CMake ≥ 3.28, and a C++20 compiler (Clang, GCC, or MSVC)
-- Linux only: install SFML runtime deps (example for Debian/Ubuntu):
+### Design Patterns
+
+- **State Pattern** for scene management
+- **Resource Manager Pattern** for assets
+- **RAII** with smart pointers for safe ownership
+- **Modular Design** for maintainable gameplay code
+
+## 🛠️ Technical Stack
+
+- **Language**: C++20
+- **Graphics/Audio**: SFML 3.0.1
+- **Build System**: CMake 3.28
+- **Platform**: Windows, macOS, Linux
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- C++20-compatible compiler (Clang, GCC, or MSVC)
+- CMake 3.28+
+- Git
+- Linux-only deps (example for Debian/Ubuntu):
   ```bash
   sudo apt update && sudo apt install -y \
     libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
@@ -30,80 +60,109 @@ Prerequisites
     libgl1-mesa-dev libegl1-mesa-dev
   ```
 
-Build and Run
+### Installation
 
-```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-./build/bin/main
+1. Clone the repository
+   ```bash
+   git clone https://github.com/connorssullivan/Battle-Bros.git
+   cd Battle-Bros
+   ```
+
+2. Build the project
+   ```bash
+   cmake -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build -j
+   ```
+
+3. Run the game
+   ```bash
+   ./build/bin/main
+   ```
+
+### Development Setup
+
+- **VS Code**: Use the CMake Tools extension
+- **Visual Studio**: Open `CMakeLists.txt`
+- **CLion**: Open the project directory
+- **Qt Creator**: Open `CMakeLists.txt`
+
+## 🎮 Controls
+
+- Left/Right: Move
+- Up: Jump (when grounded)
+- Space: Throw rock
+- Esc: Pause
+
+## 📁 Project Structure
+
+```
+Battle-Bros/
+├── assets/
+│   ├── audio/
+│   ├── fonts/
+│   └── textures/
+├── include/
+│   ├── core/         # Config, Game, State, StateMan, AssetMan
+│   ├── menus/        # MainMenu, PauseGame, GameOver
+│   ├── sprites/      # Character, BlueDude
+│   └── objects/      # Monster, Coin, Star
+├── src/
+│   ├── main.cpp
+│   ├── Game.cpp, GamePlay.cpp, StateMan.cpp, AssetMan.cpp
+│   ├── Character.cpp, BlueDude.cpp
+│   ├── Monster.cpp, Coin.cpp, Star.cpp
+│   └── MainMenu.cpp, PauseGame.cpp, GameOver.cpp
+└── CMakeLists.txt
 ```
 
-## Controls
+## 🎯 Key Implementation Details
 
-- Left/Right: move
-- Up: jump (when grounded)
-- Space: throw rock
-- Esc: pause
+### State Management
+Manages transitions across `MainMenu`, `GamePlay`, `PauseGame`, and `GameOver` while keeping logic isolated per scene.
 
-## Project Structure
+### Player & Rocks
+- Separate velocities for player and rock
+- Rock collisions use previous-frame bounds to classify top/bottom/side impacts and prevent tunneling
+- Landed rocks remain supported on platform tops and can be picked up
 
-```
-assets/            # Textures, audio, fonts
-include/           # Engine and game headers
-  core/            # Config, Game, State, StateMan, AssetMan
-  menus/           # Pause, GameOver
-  sprites/         # Character, BlueDude, Monster, Coin, Star
-src/               # Implementations (game loop, scenes, gameplay)
-CMakeLists.txt     # Build config (fetches SFML 3.0.1 via FetchContent)
-```
+### Collisions
+- Character resolves horizontal then vertical movement each frame
+- Landing computes corrected position on top of platforms
+- Walls and ground are treated as platforms for consistent behavior
 
-Key classes
+### Asset Management
+Centralized loading/caching for textures, fonts, and audio, minimizing IO and ensuring single ownership.
 
-- `Engine::State`, `StateMan`, `Game`: lightweight state machine and app loop
-- `AssetMan`: centralized texture/font/audio loading
-- `GamePlay`: world assembly, input, collisions, camera, scoring
-- `Character`/`BlueDude`: movement, animation, jump physics, rock throw
-- `Monster`, `Coin`, `Star`: interactables and simple AI/collectibles
+## 🔧 Customization
 
-## Architecture & Implementation Notes
+### Adding New Features
+1. Create a new state (derive from `State`) or entity class
+2. Register assets in the asset system
+3. Implement logic and wire into `GamePlay`
+4. Add sources to `CMakeLists.txt`
 
-- Physics and collisions
-  - Character movement integrates gravity and resolves collisions in two passes (horizontal then vertical)
-  - Landing detection computes a corrected top-of-platform position to avoid embedding
-  - Rocks use previous-frame bounds to classify impact as top/bottom/side and prevent tunneling
-  - “Supported” checks keep landed rocks resting on platform tops; otherwise they resume falling
+### Modifying Gameplay
+- Tune physics in `include/core/Config.h`
+- Adjust collisions in `src/Character.cpp`
+- Add mechanics in `src/GamePlay.cpp`
 
-- Camera
-  - Smoothed follow via linear interpolation with configurable `m_cameraSmoothness`
-  - View clamped to level bounds to avoid showing out-of-world regions
+## 📊 Performance Considerations
 
-- Assets & rendering
-  - Sprite-based platforms (`m_bricks`) and boundaries (`m_walls` + `m_ground`)
-  - Background parallax-like offset and seamless repeat across a wide level
+- 60 FPS target
+- Efficient sprite bounds checks and simple intersection math
+- Cached assets and minimal per-frame allocations
 
-- Modularity
-  - Each scene encapsulates its own input, update, and draw logic
-  - Entities expose small, focused APIs (e.g., `throwRock`, `pickupRock`, `Update`, `Draw`)
+## 📝 License
 
-## Extending the Game
+This project is licensed under the MIT License — see `LICENSE.md`.
 
-- New enemies or power-ups: follow the `Monster`/`Star` patterns and register in `GamePlay`
-- Level design: add to `m_bricks` with positions/scales, or introduce a simple level loader (e.g., JSON/TMX)
-- Tuning: adjust gravity, jump strength, walk speed, and rock speed in `include/core/Config.h`
+Note: Some bundled assets (e.g., fonts) include their own licenses.
 
-## Roadmap
+## 🙏 Acknowledgments
 
-- Basic level file format + loader; in-editor level placement
-- Unit tests for collision helpers and state transitions
-- CI builds for macOS/Linux/Windows
-- Audio mixing polish and dynamic music transitions
+- SFML team for the excellent library
+- CMake community for the build system
 
-## Building in IDEs
+---
 
-- VS Code (CMake Tools), CLion, Visual Studio, and Qt Creator all work out of the box with the CMake project
-
-## License
-
-MIT. See `LICENSE.md`.
-
-Assets may have their own licenses (e.g., fonts in `assets/fonts/Bitcount_Grid_Double`). Review included license files before reuse.
+Built with C++ and SFML. Designed to showcase clean architecture, modern C++, and practical game engineering suitable for SWE roles.
