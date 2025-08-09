@@ -1,102 +1,109 @@
-# CMake SFML Project Template
+<div align="center">
 
-This repository template should allow for a fast and hassle-free kick start of your next SFML project using CMake.
-Thanks to [GitHub's nature of templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), you can fork this repository without inheriting its Git history.
+# Battle Bros
 
-The template starts out very basic, but might receive additional features over time:
+Arcade platformer built with modern C++ and SFML 3. Throw rocks, dodge monsters, collect coins, and chase the star.
 
-- Basic CMake script to build your project and link SFML on any operating system
-- Basic [GitHub Actions](https://github.com/features/actions) script for all major platforms
+</div>
 
-## How to Use
+---
 
-1. Install [Git](https://git-scm.com/downloads) and [CMake](https://cmake.org/download/). Use your system's package manager if available.
-2. Follow [GitHub's instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for how to use their project template feature to create your own project. If you don't want to use GitHub, see the section below.
-3. Clone your new GitHub repo and open the repo in your text editor of choice.
-4. Open [CMakeLists.txt](CMakeLists.txt). Rename the project and the target name of the executable to whatever name you want. Make sure to change all occurrences.
-5. If you want to add or remove any .cpp files, change the source files listed in the `add_executable` call in CMakeLists.txt to match the source files your project requires. If you plan on keeping the default main.cpp file then no changes are required.
-6. If your code uses the Audio or Network modules then add `SFML::Audio` or `SFML::Network` to the `target_link_libraries` call alongside the existing `SFML::Graphics` library that is being linked.
-7. If you use Linux, install SFML's dependencies using your system package manager. On Ubuntu and other Debian-based distributions you can use the following commands:
-   ```
-   sudo apt update
-   sudo apt install \
-       libxrandr-dev \
-       libxcursor-dev \
-       libxi-dev \
-       libudev-dev \
-       libfreetype-dev \
-       libflac-dev \
-       libvorbis-dev \
-       libgl1-mesa-dev \
-       libegl1-mesa-dev \
-       libfreetype-dev
-   ```
-8. Configure and build your project. Most popular IDEs support CMake projects with very little effort on your part.
+## Highlights
 
-   - [VS Code](https://code.visualstudio.com) via the [CMake extension](https://code.visualstudio.com/docs/cpp/cmake-linux)
-   - [Visual Studio](https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170)
-   - [CLion](https://www.jetbrains.com/clion/features/cmake-support.html)
-   - [Qt Creator](https://doc.qt.io/qtcreator/creator-project-cmake.html)
+- Clean C++20 codebase with a minimal engine: `State` machine, asset manager, and scene-driven gameplay
+- Deterministic-feeling platforming with gravity, jump arcs, and precise collision resolution
+- Projectile system (rocks) with top/bottom/side collision handling and anti-tunneling using previous-frame bounds
+- Smooth camera follow with configurable responsiveness
+- Simple, extensible enemy AI (patrol/attack/kill-on-star) and score/collectible systems
+- Cross-platform builds via CMake; SFML 3 fetched at configure time (no manual SDK installs required)
 
-   Using CMake from the command line is straightforward as well.
-   Be sure to run these commands in the root directory of the project you just created.
+## Quick Start
 
-   ```
-   cmake -B build
-   cmake --build build
-   ./build/bin/main
-   ```
+Prerequisites
 
-9. Enjoy!
+- Git, CMake ≥ 3.28, and a C++20 compiler (Clang, GCC, or MSVC)
+- Linux only: install SFML runtime deps (example for Debian/Ubuntu):
+  ```bash
+  sudo apt update && sudo apt install -y \
+    libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
+    libfreetype-dev libflac-dev libvorbis-dev \
+    libgl1-mesa-dev libegl1-mesa-dev
+  ```
 
-## Upgrading SFML
+Build and Run
 
-SFML is found via CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) module.
-FetchContent automatically downloads SFML from GitHub and builds it alongside your own code.
-Beyond the convenience of not having to install SFML yourself, this ensures ABI compatibility and simplifies things like specifying static versus shared libraries.
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+./build/bin/main
+```
 
-Modifying what version of SFML you want is as easy as changing the `GIT_TAG` argument.
-Currently it uses SFML 3 via the `3.0.0` tag.
+## Controls
 
-## But I want to...
+- Left/Right: move
+- Up: jump (when grounded)
+- Space: throw rock
+- Esc: pause
 
-Modify CMake options by adding them as configuration parameters (with a `-D` flag) or by modifying the contents of CMakeCache.txt and rebuilding.
+## Project Structure
 
-### Not use GitHub
+```
+assets/            # Textures, audio, fonts
+include/           # Engine and game headers
+  core/            # Config, Game, State, StateMan, AssetMan
+  menus/           # Pause, GameOver
+  sprites/         # Character, BlueDude, Monster, Coin, Star
+src/               # Implementations (game loop, scenes, gameplay)
+CMakeLists.txt     # Build config (fetches SFML 3.0.1 via FetchContent)
+```
 
-You can use this project without a GitHub account by [downloading the contents](https://github.com/SFML/cmake-sfml-project/archive/refs/heads/master.zip) of the repository as a ZIP archive and unpacking it locally.
-This approach also avoids using Git entirely if you would prefer to not do that.
+Key classes
 
-### Change Compilers
+- `Engine::State`, `StateMan`, `Game`: lightweight state machine and app loop
+- `AssetMan`: centralized texture/font/audio loading
+- `GamePlay`: world assembly, input, collisions, camera, scoring
+- `Character`/`BlueDude`: movement, animation, jump physics, rock throw
+- `Monster`, `Coin`, `Star`: interactables and simple AI/collectibles
 
-See the variety of [`CMAKE_<LANG>_COMPILER`](https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER.html) options.
-In particular you'll want to modify `CMAKE_CXX_COMPILER` to point to the C++ compiler you wish to use.
+## Architecture & Implementation Notes
 
-### Change Compiler Optimizations
+- Physics and collisions
+  - Character movement integrates gravity and resolves collisions in two passes (horizontal then vertical)
+  - Landing detection computes a corrected top-of-platform position to avoid embedding
+  - Rocks use previous-frame bounds to classify impact as top/bottom/side and prevent tunneling
+  - “Supported” checks keep landed rocks resting on platform tops; otherwise they resume falling
 
-CMake abstracts away specific optimizer flags through the [`CMAKE_BUILD_TYPE`](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html) option.
-By default this project recommends `Release` builds which enable optimizations.
-Other build types include `Debug` builds which enable debug symbols but disable optimizations.
-If you're using a multi-configuration generator (as is often the case on Windows), you can modify the [`CMAKE_CONFIGURATION_TYPES`](https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html#variable:CMAKE_CONFIGURATION_TYPES) option.
+- Camera
+  - Smoothed follow via linear interpolation with configurable `m_cameraSmoothness`
+  - View clamped to level bounds to avoid showing out-of-world regions
 
-### Change Generators
+- Assets & rendering
+  - Sprite-based platforms (`m_bricks`) and boundaries (`m_walls` + `m_ground`)
+  - Background parallax-like offset and seamless repeat across a wide level
 
-While CMake will attempt to pick a suitable default generator, some systems offer a number of generators to choose from.
-Ubuntu, for example, offers Makefiles and Ninja as two potential options.
-For a list of generators, click [here](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
-To modify the generator you're using you must reconfigure your project providing a `-G` flag with a value corresponding to the generator you want.
-You can't simply modify an entry in the CMakeCache.txt file unlike the above options.
-Then you may rebuild your project with this new generator.
+- Modularity
+  - Each scene encapsulates its own input, update, and draw logic
+  - Entities expose small, focused APIs (e.g., `throwRock`, `pickupRock`, `Update`, `Draw`)
 
-## More Reading
+## Extending the Game
 
-Here are some useful resources if you want to learn more about CMake:
+- New enemies or power-ups: follow the `Monster`/`Star` patterns and register in `GamePlay`
+- Level design: add to `m_bricks` with positions/scales, or introduce a simple level loader (e.g., JSON/TMX)
+- Tuning: adjust gravity, jump strength, walk speed, and rock speed in `include/core/Config.h`
 
-- [Official CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/)
-- [How to Use CMake Without the Agonizing Pain - Part 1](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html)
-- [How to Use CMake Without the Agonizing Pain - Part 2](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-2.html)
-- [Better CMake YouTube series by Jefferon Amstutz](https://www.youtube.com/playlist?list=PL8i3OhJb4FNV10aIZ8oF0AA46HgA2ed8g)
+## Roadmap
+
+- Basic level file format + loader; in-editor level placement
+- Unit tests for collision helpers and state transitions
+- CI builds for macOS/Linux/Windows
+- Audio mixing polish and dynamic music transitions
+
+## Building in IDEs
+
+- VS Code (CMake Tools), CLion, Visual Studio, and Qt Creator all work out of the box with the CMake project
 
 ## License
 
-The source code is dual licensed under Public Domain and MIT -- choose whichever you prefer.
+MIT. See `LICENSE.md`.
+
+Assets may have their own licenses (e.g., fonts in `assets/fonts/Bitcount_Grid_Double`). Review included license files before reuse.

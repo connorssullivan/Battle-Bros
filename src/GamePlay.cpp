@@ -66,12 +66,14 @@ void GamePlay::Init()
 
     // === GROUND LEVEL PLATFORMS ===
     // Low platform near start
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({200.f + i * brickWidth, 650.f}); 
         m_bricks.push_back(std::move(brick));
 
+        // Make a coin
         if (i == 2)
         {
             std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
@@ -247,7 +249,8 @@ void GamePlay::Init()
         
     };
     
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) 
+    {
         auto monster = std::make_unique<Monster>(monsterIdleTex, monsterWalkTex, monsterAttack1Tex, 
                                                 monsterAttack2Tex, monsterHurtTex, monsterDeathTex,
                                                 monsterBounds[i].first, monsterBounds[i].second);
@@ -277,7 +280,8 @@ void GamePlay::Init()
     // === EXTENDED LEVEL SECTIONS ===
     
     // High platform section
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({1700.f + i * brickWidth, 150.f});
@@ -290,7 +294,8 @@ void GamePlay::Init()
     }
 
     // Mid-level floating platforms
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({1900.f + i * brickWidth, 350.f});
@@ -306,7 +311,8 @@ void GamePlay::Init()
     }
 
     // Low platform section
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({2100.f + i * brickWidth, 500.f});
@@ -322,7 +328,8 @@ void GamePlay::Init()
     }
 
     // Zigzag platforms
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6; ++i) 
+    {
         float yPos = (i % 2 == 0) ? 300.f : 450.f;
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
@@ -335,7 +342,7 @@ void GamePlay::Init()
         m_coins.push_back(std::move(coin));
     }
 
-    // Final challenge section
+    // Final challenge 
     for (int i = 0; i < 4; ++i) {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
@@ -352,7 +359,8 @@ void GamePlay::Init()
     }
 
     // Ground-level platforms near the end
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) 
+    {
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({2800.f + i * brickWidth, 550.f});
@@ -521,6 +529,7 @@ void GamePlay::Update(sf::Time deltaTime)
     for (auto& coin : m_coins)
     {
         coin->Update();
+        
         // Check if player collects the coin
         if (m_player->GetSprite().getGlobalBounds().findIntersection(coin->GetSprite().getGlobalBounds()))
         {
@@ -557,8 +566,10 @@ void GamePlay::Update(sf::Time deltaTime)
             if (monster) {
                 monster->Update(deltaTime.asSeconds());
                 CheckMonsterHit();
+
                 // Check if monster attacks player
-                if (checkMonsterAttack(monster.get()) && monster->getState() != Monster::State::Death) {
+                if (checkMonsterAttack(monster.get()) && monster->getState() != Monster::State::Death) 
+                {
                     // TODO: Monster Attack
                     m_player->kill();
                     if (m_player->getDidDeathEnd())
@@ -572,7 +583,7 @@ void GamePlay::Update(sf::Time deltaTime)
     }
     else
     {
-        // When paused, don't update anything but keep the camera stable
+       
         // Don't call UpdateCamera() when paused
     }
 }
@@ -620,7 +631,7 @@ void GamePlay::Draw()
     
     m_player->Draw(*m_context->m_window);
     
-    // Draw UI elements (these stay fixed on screen)
+    // Draw Fixed UI elements 
     m_context->m_window->setView(m_context->m_window->getDefaultView());  // Reset to default view for UI
     m_context->m_window->draw(*m_scoreText);
     
@@ -671,10 +682,14 @@ void GamePlay::UpdateCamera()
         float bg2X = bg1X + bgWidth;
         
         // Wrap backgrounds when they go off screen
-        if (bg1X + bgWidth < 0) {
+        if (bg1X + bgWidth < 0) 
+        {
             bg1X += bgWidth * 2;
             bg2X += bgWidth * 2;
-        } else if (bg2X < 0) {
+        } 
+        
+        else if (bg2X < 0) 
+        {
             bg2X += bgWidth * 2;
         }
         
@@ -735,7 +750,8 @@ bool GamePlay::checkMonsterAttack(Monster* monster)
     float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
                               (dy * dy) / (attackRadiusY * attackRadiusY);
     
-    if (normalizedDistance < 1.0f) {
+    if (normalizedDistance < 1.0f) 
+    {
 
         // If monster is on right 
         if (dx > 0 && !monster->GetIsFaceingRight())
@@ -759,15 +775,18 @@ bool GamePlay::checkMonsterAttack(Monster* monster)
 void GamePlay::CheckMonsterHit()
 {
     // Only check for collision when rock is flying
-    if (m_player->getRockState() != Character::RockState::Flying) {
+    if (m_player->getRockState() != Character::RockState::Flying) 
+    {
         return;
     }
     
     sf::FloatRect rockBounds = m_player->getRock().getGlobalBounds();
     
     // Check collision with all monsters
-    for (auto& monster : m_monsters) {
-        if (monster && monster->getState() != Monster::State::Death) {
+    for (auto& monster : m_monsters)
+    {
+        if (monster && monster->getState() != Monster::State::Death) 
+        {
             sf::FloatRect monsterBounds = monster->GetSprite().getGlobalBounds();
             
             sf::Vector2f monsterCenter = monsterBounds.position + (monsterBounds.size / 2.f);

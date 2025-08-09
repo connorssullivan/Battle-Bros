@@ -27,9 +27,11 @@ class MainMenu : public Engine::State
         // Animated background elements
         std::unique_ptr<BlueDude> m_blueDude;
         std::unique_ptr<Monster> m_monster;
+
         std::unique_ptr<sf::Sprite> m_rock;
         float m_rockTimer;
         bool m_rockFlying;
+        
         sf::Vector2f m_rockVelocity;
         sf::Vector2f m_rockStartPos;
         sf::Vector2f m_rockTargetPos;
