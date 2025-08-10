@@ -19,7 +19,7 @@ MainMenu::~MainMenu()
 void MainMenu::Init() 
 {
     // Initialize main background using the level background
-    const sf::Texture& mainBGTex = m_context->m_assets->getTexture(MAIN_BACKGROUND);
+    const sf::Texture& mainBGTex = m_context->m_assets->getTexture(BACKGROUND);
     m_background = std::make_unique<sf::Sprite>(mainBGTex);
 
    

@@ -1,6 +1,9 @@
 # 🐺 Battle Bros — 2D Platformer (C++ SFML)
 
+<div align="center">
+  <img src="assets/gifs/battle-bros.gif" alt="Battle Bros gameplay" width="800"/>
 
+</div>
 
 A modern, arcade-style platformer built in C++ with SFML. Jump across platforms, throw rocks, dodge monsters, collect coins, and chase the star.
 
@@ -14,7 +17,7 @@ A modern, arcade-style platformer built in C++ with SFML. Jump across platforms,
 - **Responsive Platforming**: Gravity, jump arcs, and precise horizontal/vertical collision resolution
 - **Projectile System**: Throw rocks with top/bottom/side collision handling and anti-tunneling
 - **State Management**: Clean separation between main menu, gameplay, pause, and game over
-- **Asset Management**: Centralized resource loading/caching for textuhttps://github.com/connorssullivan/Battle-Bros/blob/master/README.mdres, fonts, and audio
+- **Asset Management**: Centralized resource loading/caching for textures, fonts, and audio
 - **Modern C++**: C++20 codebase with RAII and smart pointers
 - **Cross-Platform**: CMake-based builds on Windows, macOS, and Linux
 - **Audio Integration**: Background music and effects
@@ -32,7 +35,7 @@ A modern, arcade-style platformer built in C++ with SFML. Jump across platforms,
 
 ### Design Patterns
 
-- **MVC** for scene management, and game
+- **State Pattern** for scene management
 - **Resource Manager Pattern** for assets
 - **RAII** with smart pointers for safe ownership
 - **Modular Design** for maintainable gameplay code
