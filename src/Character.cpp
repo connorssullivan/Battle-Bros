@@ -281,7 +281,7 @@ void Character::throwRock()
 bool Character::checkRockCollision(const sf::Sprite& otherSprite)
 {
 
-    // Get bounds of rock and what ecer it's coliding with
+    // Get bounds of rock and what it's coliding with
     sf::FloatRect rockBounds = m_rock.getGlobalBounds();
     sf::FloatRect otherBounds = otherSprite.getGlobalBounds();    
     

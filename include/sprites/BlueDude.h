@@ -3,7 +3,7 @@
 #include "Character.h"
 #include "AssetMan.h"
 
-class BlueDude : public Character 
+class BlueDude : public Character // All members have same guard as Character. Public stays public 
 {
     private:
 

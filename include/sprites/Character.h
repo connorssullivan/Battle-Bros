@@ -24,6 +24,7 @@ class Character
         float m_speed; 
         float m_gravity;   
         float m_jumpStrength; 
+        
         float m_deathDelayTimer;
         float m_deathDelayDuration;
         bool m_deathEnded;
