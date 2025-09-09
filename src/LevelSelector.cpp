@@ -1,5 +1,5 @@
 #include "LevelSelector.h"
-#include "GamePlay.h"
+#include "Level1.h"
 #include "MainMenu.h"
 
 LevelSelector::LevelSelector(std::shared_ptr<Context>& context)
@@ -123,7 +123,7 @@ void LevelSelector::SelectLevel(int levelIndex)
     if (levelIndex >= 0 && levelIndex < m_totalLevels && m_levelUnlocked[levelIndex])
     {
         // Start the selected level
-        m_context->m_states->Add(std::make_unique<GamePlay>(m_context));
+        m_context->m_states->Add(std::make_unique<Level1>(m_context));
     }
 }
 

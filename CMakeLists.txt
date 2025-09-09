@@ -19,7 +19,7 @@ add_executable(main
     src/StateMan.cpp
     src/AssetMan.cpp
     src/MainMenu.cpp
-    src/GamePlay.cpp
+    src/Level1.cpp
     src/GameOver.cpp
     src/PauseGame.cpp
     src/Character.cpp
@@ -36,6 +36,7 @@ target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)
 target_include_directories(main PRIVATE 
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/core
+    ${CMAKE_SOURCE_DIR}/include/levels
     ${CMAKE_SOURCE_DIR}/include/scenes
     ${CMAKE_SOURCE_DIR}/include/menus
     ${CMAKE_SOURCE_DIR}/include/sprites

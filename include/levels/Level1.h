@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <array>
+#include <optional>
+#include <vector>
 
 
 #include <SFML/Graphics/Sprite.hpp>
@@ -18,7 +20,7 @@
 
 class Context;
 
-class GamePlay : public Engine::State
+class Level1 : public Engine::State
 {
     private:
         std::shared_ptr<Context> m_context;
@@ -36,6 +38,7 @@ class GamePlay : public Engine::State
         std::unique_ptr<sf::Sprite> m_background2; // Second background for repeating
         std::array<std::unique_ptr<sf::Sprite>, 3> m_walls;
         std::unique_ptr<sf::Sprite> m_ground; 
+        std::unique_ptr<sf::Sprite> m_rock;
         std::unique_ptr<Character> m_player; 
         std::optional<sf::Text> m_scoreText;
         std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
@@ -52,8 +55,8 @@ class GamePlay : public Engine::State
         sf::Time m_elapsedTime;
 
     public:
-        GamePlay(std::shared_ptr<Context>& context);
-        ~GamePlay();
+        Level1(std::shared_ptr<Context>& context);
+        ~Level1();
 
         void Init() override;
         
@@ -63,7 +66,7 @@ class GamePlay : public Engine::State
         void Pause() override;
         void Start() override;
         void CheckMonsterHit();
-
+        
     private:
         void UpdateCamera();
         std::vector<sf::Sprite*> getPlatforms();  // Get all platform sprites for collision

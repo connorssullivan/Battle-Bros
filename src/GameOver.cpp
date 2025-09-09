@@ -1,5 +1,5 @@
 #include "GameOver.h"
-#include "GamePlay.h"
+#include "Level1.h"
 
 
 GameOver::GameOver(std::shared_ptr<Context>& context, int score)
@@ -144,7 +144,7 @@ void GameOver::Update(sf::Time deltaTime)
 
     if (m_isPlayButtonPressed)
     {
-        m_context->m_states->Add(std::make_unique<GamePlay>(m_context), true);
+        m_context->m_states->Add(std::make_unique<Level1>(m_context), true);
 
     }
 

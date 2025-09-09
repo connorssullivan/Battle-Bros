@@ -1,7 +1,7 @@
 # 🐺 Battle Bros — 2D Platformer (C++ SFML)
 
 <div align="center">
-  <img src="assets/gifs/battle-bros.gif" alt="Battle Bros gameplay" width="800"/>
+  <img src="assets/gifs/battle-bros.gif" alt="Battle Bros Level1" width="800"/>
 
 </div>
 
@@ -16,7 +16,7 @@ A modern, arcade-style platformer built in C++ with SFML. Jump across platforms,
 
 - **Responsive Platforming**: Gravity, jump arcs, and precise horizontal/vertical collision resolution
 - **Projectile System**: Throw rocks with top/bottom/side collision handling and anti-tunneling
-- **State Management**: Clean separation between main menu, gameplay, pause, and game over
+- **State Management**: Clean separation between main menu, Level1, pause, and game over
 - **Asset Management**: Centralized resource loading/caching for textures, fonts, and audio
 - **Modern C++**: C++20 codebase with RAII and smart pointers
 - **Cross-Platform**: CMake-based builds on Windows, macOS, and Linux
@@ -27,7 +27,7 @@ A modern, arcade-style platformer built in C++ with SFML. Jump across platforms,
 ### Core Components
 
 - **Game Engine**: Main loop and view/camera system
-- **State Machine**: `MainMenu`, `GamePlay`, `PauseGame`, `GameOver`
+- **State Machine**: `MainMenu`, `Level1`, `PauseGame`, `GameOver`
 - **Asset Manager**: Texture, font, and audio loading/caching
 - **Character/BlueDude**: Movement, animation, jump, and throwing
 - **Monsters / Coins / Star**: Interactables and simple AI/collectibles
@@ -38,7 +38,7 @@ A modern, arcade-style platformer built in C++ with SFML. Jump across platforms,
 - **State Pattern** for scene management
 - **Resource Manager Pattern** for assets
 - **RAII** with smart pointers for safe ownership
-- **Modular Design** for maintainable gameplay code
+- **Modular Design** for maintainable Level1 code
 
 ## 🛠️ Technical Stack
 
@@ -110,7 +110,7 @@ Battle-Bros/
 │   └── objects/      # Monster, Coin, Star
 ├── src/
 │   ├── main.cpp
-│   ├── Game.cpp, GamePlay.cpp, StateMan.cpp, AssetMan.cpp
+│   ├── Game.cpp, Level1.cpp, StateMan.cpp, AssetMan.cpp
 │   ├── Character.cpp, BlueDude.cpp
 │   ├── Monster.cpp, Coin.cpp, Star.cpp
 │   └── MainMenu.cpp, PauseGame.cpp, GameOver.cpp
@@ -120,7 +120,7 @@ Battle-Bros/
 ## 🎯 Key Implementation Details
 
 ### State Management
-Manages transitions across `MainMenu`, `GamePlay`, `PauseGame`, and `GameOver` while keeping logic isolated per scene.
+Manages transitions across `MainMenu`, `Level1`, `PauseGame`, and `GameOver` while keeping logic isolated per scene.
 
 ### Player & Rocks
 - Separate velocities for player and rock
@@ -140,13 +140,13 @@ Centralized loading/caching for textures, fonts, and audio, minimizing IO and en
 ### Adding New Features
 1. Create a new state (derive from `State`) or entity class
 2. Register assets in the asset system
-3. Implement logic and wire into `GamePlay`
+3. Implement logic and wire into `Level1`
 4. Add sources to `CMakeLists.txt`
 
-### Modifying Gameplay
+### Modifying Level1
 - Tune physics in `include/core/Config.h`
 - Adjust collisions in `src/Character.cpp`
-- Add mechanics in `src/GamePlay.cpp`
+- Add mechanics in `src/Level1.cpp`
 
 ## 📊 Performance Considerations
 

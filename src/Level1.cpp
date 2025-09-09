@@ -1,4 +1,4 @@
-#include "GamePlay.h"
+#include "Level1.h"
 
 #include <string>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 
 
 
-GamePlay::GamePlay(std::shared_ptr<Context>& context)
+Level1::Level1(std::shared_ptr<Context>& context)
 : m_context {context}
 , m_elapsedTime {sf::Time::Zero}
 , m_score {0}
@@ -25,12 +25,12 @@ GamePlay::GamePlay(std::shared_ptr<Context>& context)
     }
 }
 
-GamePlay::~GamePlay()
+Level1::~Level1()
 {
 
 }
 
-void GamePlay::Init() 
+void Level1::Init() 
 {
 
     // Get textures 
@@ -42,10 +42,13 @@ void GamePlay::Init()
     const sf::Texture& coin4 = m_context->m_assets->getTexture(COIN_4);
     const sf::Texture& coin5 = m_context->m_assets->getTexture(COIN_5);
     const sf::Texture& coin6 = m_context->m_assets->getTexture(COIN_6);
+    const sf::Texture& rockTex = m_context->m_assets->getTexture(ROCK);
 
+
+    // Create walls
     for (int i=0; i < m_walls.size(); i++)
     {
-        m_walls[i]  = std::make_unique<sf::Sprite>(m_context->m_assets->getTexture(WALL));
+        m_walls[i]  = std::make_unique<sf::Sprite>(wallTex);
     }
 
     // Create the floor
@@ -407,7 +410,6 @@ void GamePlay::Init()
     const sf::Texture& dudeTex = m_context->m_assets->getTexture(BLUE_DUDE);
     const sf::Texture& dudeWalkTex = m_context->m_assets->getTexture(BLUE_DUDE_WALK);
     const sf::Texture& dudeJumpTex = m_context->m_assets->getTexture(BLUE_DUDE_JUMP);
-    const sf::Texture& rockTex = m_context->m_assets->getTexture(ROCK);
     const sf::Texture& dudeThrowTex = m_context->m_assets->getTexture(BLUE_DUDE_THROW);
     const sf::Texture& dudeDeathTex = m_context->m_assets->getTexture(BLUE_DUDE_DEATH);
     m_player = std::make_unique<BlueDude>(dudeTex, dudeWalkTex, dudeJumpTex, dudeThrowTex, dudeDeathTex, rockTex, level_width);
@@ -418,6 +420,7 @@ void GamePlay::Init()
     const sf::Texture& starTex = m_context->m_assets->getTexture(STAR);
     m_star = std::make_unique<Star>(starTex);
     m_star->GetSprite().setPosition({2800, 600});
+
 
     // Make some coins
     for (int i=0; i < 5; i++)
@@ -430,9 +433,19 @@ void GamePlay::Init()
         
     }
 
-    // Initalize score score
+    // Initalize score score and rock
     m_scoreText = sf::Text(m_context->m_assets->getFont(MAIN_FONT), "Score: ", 30);
     m_scoreText->setString("Score: " + std::to_string(m_score));
+    m_scoreText->setPosition({10.f, 20.f});
+
+    m_rock = std::make_unique<sf::Sprite>(rockTex);
+    m_rock->setScale({5.f, 5.f,});
+    const float uiPadding = 10.f;
+    {
+        sf::FloatRect rb = m_rock->getGlobalBounds();
+        m_rock->setPosition({static_cast<float>(Config::SCREEN_WIDTH) - rb.size.x - uiPadding, uiPadding});
+    }
+    
 
     // Initialize camera
     m_camera = m_context->m_window->getDefaultView();
@@ -441,7 +454,7 @@ void GamePlay::Init()
 }
 
 
-void GamePlay::ProcessInput() 
+void Level1::ProcessInput() 
 {
     while (const std::optional<sf::Event> event = m_context->m_window->pollEvent())
     {
@@ -524,7 +537,7 @@ void GamePlay::ProcessInput()
     }
 }
 
-void GamePlay::Update(sf::Time deltaTime) 
+void Level1::Update(sf::Time deltaTime) 
 {
     for (auto& coin : m_coins)
     {
@@ -577,6 +590,17 @@ void GamePlay::Update(sf::Time deltaTime)
                 }
             }
         }
+
+        // Update UI rock tint 
+        if (m_player->getRockState() != Character::RockState::None)
+        {
+            m_rock->setColor(sf::Color(160, 160, 160, 160));
+        }
+        else
+        {
+            m_rock->setColor(sf::Color(255, 255, 255, 255));
+        }
+        
         
         // Update camera to follow player
         UpdateCamera();
@@ -589,7 +613,7 @@ void GamePlay::Update(sf::Time deltaTime)
 }
 
 
-void GamePlay::Draw()
+void Level1::Draw()
 {
     m_context->m_window->clear();
     
@@ -634,21 +658,23 @@ void GamePlay::Draw()
     // Draw Fixed UI elements 
     m_context->m_window->setView(m_context->m_window->getDefaultView());  // Reset to default view for UI
     m_context->m_window->draw(*m_scoreText);
+    if (m_rock)
+        m_context->m_window->draw(*m_rock);
     
     m_context->m_window->display();
 }
 
-void GamePlay::Pause() 
+void Level1::Pause() 
 {
     m_isPaused = true;
 }
 
-void GamePlay::Start()
+void Level1::Start()
 {
     m_isPaused = false;
 }
 
-void GamePlay::UpdateCamera()
+void Level1::UpdateCamera()
 {
     sf::Vector2f playerPos = m_player->GetSprite().getPosition();
     
@@ -700,7 +726,7 @@ void GamePlay::UpdateCamera()
     m_context->m_window->setView(m_camera);
 }
 
-std::vector<sf::Sprite*> GamePlay::getPlatforms()
+std::vector<sf::Sprite*> Level1::getPlatforms()
 {
     std::vector<sf::Sprite*> platforms;
     
@@ -722,7 +748,7 @@ std::vector<sf::Sprite*> GamePlay::getPlatforms()
     return platforms;
 }
 
-bool GamePlay::checkMonsterAttack(Monster* monster)
+bool Level1::checkMonsterAttack(Monster* monster)
 {
     if (!monster || monster->getState() == Monster::State::Death || monster->getState() == Monster::State::Attack1 || monster->getState() == Monster::State::Attack2) 
         return false;
@@ -772,7 +798,7 @@ bool GamePlay::checkMonsterAttack(Monster* monster)
     return false;
 }
 
-void GamePlay::CheckMonsterHit()
+void Level1::CheckMonsterHit()
 {
     // Only check for collision when rock is flying
     if (m_player->getRockState() != Character::RockState::Flying) 
@@ -812,7 +838,7 @@ void GamePlay::CheckMonsterHit()
     }
 }
 
-bool GamePlay::checkGotStar()
+bool Level1::checkGotStar()
 {
     sf::FloatRect playerBounds = m_player->GetSprite().getGlobalBounds();
     sf::FloatRect starBounds = m_star->GetSprite().getGlobalBounds();
