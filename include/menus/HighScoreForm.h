@@ -1,5 +1,5 @@
 #pragma once
-#include "HighScoreForm.h"
+
 #include "Game.h"
 #include "Config.h"
 #include "GameRecords.h"

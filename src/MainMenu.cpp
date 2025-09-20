@@ -251,7 +251,7 @@ void MainMenu::Update(sf::Time deltaTime)
     if (m_isLevelsButtonPressed)
     {
         m_isLevelsButtonPressed = false;
-        m_context->m_states->Add(std::make_unique<LevelSelector>(m_context), true);
+        m_context->m_states->Add(std::make_unique<LeaderBoard>(m_context), true);
     }
 
     if (m_isExitButtonPressed)

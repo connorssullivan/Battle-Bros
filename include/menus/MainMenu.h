@@ -11,6 +11,7 @@
 #include "sprites/BlueDude.h"
 #include "sprites/Monster.h"
 #include "HighScoreForm.h"
+#include "LeaderBoard.h"
 
 class Context;
 
@@ -22,6 +23,7 @@ class MainMenu : public Engine::State
         std::optional<sf::Text> m_gameTitle;
         std::optional<sf::Text> m_levelsButton;
         std::optional<sf::Text> m_exitButton;
+        std::unique_ptr<sf::Text> m_leaderboard;
         std::unique_ptr<sf::Sprite> m_background;
         std::unique_ptr<sf::Sprite> m_floor;
 
