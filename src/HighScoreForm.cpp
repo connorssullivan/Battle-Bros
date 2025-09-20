@@ -70,19 +70,19 @@ void HighScoreForm::ProcessInput()
             {
                 saveScore();
                 // TODO: Transition to next state leaderboard
-                std::vector<Records::GameRecord> top_10_records = Records::getTop10Records(m_level);
+                std::vector<Records::GameRecord> top_5_records = Records::getTop5Records(m_level);
                 // Save new record
-                if (top_10_records.size() < 10)
+                if (top_5_records.size() < 5)
                 {
                     Records::GameRecord gr(m_level, m_score, Records::getCurrentDate(), m_playerName);
                     Records::saveGameRecord(gr);
                 }
 
                 //Replace Old Record
-                else if (top_10_records[9].m_score <= m_score)
+                else if (top_5_records[9].m_score <= m_score)
                 {
                     Records::GameRecord gr(m_level, m_score, Records::getCurrentDate(), m_playerName);
-                    Records::replaceGameRecord(top_10_records[9], gr);
+                    Records::replaceGameRecord(top_5_records[9], gr);
                 }
                 m_context->m_states->Add(std::make_unique<MainMenu>(m_context), true);
             }

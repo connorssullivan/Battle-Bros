@@ -27,6 +27,10 @@ void LeaderBoard::Init()
     m_levelButtons.clear();
     m_levelTexts.clear();
     m_leaderBoxes.clear();
+    m_leaderRankTexts.clear();
+    m_leaderNameTexts.clear();
+    m_leaderScoreTexts.clear();
+    m_leaderDateTexts.clear();
     
     m_levelUnlocked.resize(m_totalLevels, false);
     m_levelUnlocked[0] = true; // Only first level unlocked
@@ -49,11 +53,14 @@ void LeaderBoard::CreateLevelLeaderBoard(int level)
         Create game records for the leaderbord, record slots will be placed vertically with the best score at the top.
     */
 
-    // Clear existing leaderboard boxes
+    // Clear existing leaderboard data
     m_leaderBoxes.clear();
+    m_leaderRankTexts.clear();
+    m_leaderNameTexts.clear();
+    m_leaderScoreTexts.clear();
+    m_leaderDateTexts.clear();
 
-    std::vector<Records::GameRecord> records = Records::getTop10Records(level);
-    //std::cout << "Level " << level << " size: " << records.size(); 
+    std::vector<Records::GameRecord> records = Records::getTop5Records(level);
 
     const float boxWidth = Config::SCREEN_WIDTH * 0.8;
     const float boxHeight = 80;
@@ -62,21 +69,45 @@ void LeaderBoard::CreateLevelLeaderBoard(int level)
     // Center the boxes horizontally
     const float startX = (Config::SCREEN_WIDTH - boxWidth) / 2;
     const float startY = 300;
+    
+    const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
     // Create all the records for the desired level
-    for (int i {}; i < records.size(); i++)
+    for (int i = 0; i < records.size(); i++)
     {
+        const float boxY = startY + i * (boxHeight + spacing);
+        
+        // Create box background
         auto box = std::make_unique<sf::RectangleShape>(sf::Vector2f(boxWidth, boxHeight));
-
-        box->setPosition({
-            startX,
-            startY + i * (boxHeight + spacing)
-        });
-
-        box->setFillColor(sf::Color::Yellow);
-
-
+        box->setPosition({startX, boxY});
+        box->setFillColor(sf::Color(40, 40, 40)); // Dark background
+        box->setOutlineThickness(2);
+        box->setOutlineColor(sf::Color::White);
         m_leaderBoxes.push_back(std::move(box));
+
+        // Create rank text (1st, 2nd, etc.)
+        auto rankText = std::make_unique<sf::Text>(font, std::to_string(i + 1), 24);
+        rankText->setFillColor(sf::Color::Yellow);
+        rankText->setPosition({startX + 20, boxY + 15});
+        m_leaderRankTexts.push_back(std::move(rankText));
+
+        // Create name text
+        auto nameText = std::make_unique<sf::Text>(font, records[i].m_name, 20);
+        nameText->setFillColor(sf::Color::White);
+        nameText->setPosition({startX + 80, boxY + 10});
+        m_leaderNameTexts.push_back(std::move(nameText));
+
+        // Create score text
+        auto scoreText = std::make_unique<sf::Text>(font, "Score: " + std::to_string(records[i].m_score), 20);
+        scoreText->setFillColor(sf::Color::Green);
+        scoreText->setPosition({startX + 80, boxY + 35});
+        m_leaderScoreTexts.push_back(std::move(scoreText));
+
+        // Create date text
+        auto dateText = std::make_unique<sf::Text>(font, records[i].m_dateCompleted, 16);
+        dateText->setFillColor(sf::Color(128, 128, 128)); // Gray color
+        dateText->setPosition({startX + boxWidth - 150, boxY + 25});
+        m_leaderDateTexts.push_back(std::move(dateText));
     }
 
 
@@ -250,6 +281,27 @@ void LeaderBoard::Draw()
     for (const auto& box : m_leaderBoxes)
     {
         m_context->m_window->draw(*box);
+    }
+    
+    // Draw leaderboard text elements
+    for (const auto& text : m_leaderRankTexts)
+    {
+        m_context->m_window->draw(*text);
+    }
+    
+    for (const auto& text : m_leaderNameTexts)
+    {
+        m_context->m_window->draw(*text);
+    }
+    
+    for (const auto& text : m_leaderScoreTexts)
+    {
+        m_context->m_window->draw(*text);
+    }
+    
+    for (const auto& text : m_leaderDateTexts)
+    {
+        m_context->m_window->draw(*text);
     }
     
     m_context->m_window->display();

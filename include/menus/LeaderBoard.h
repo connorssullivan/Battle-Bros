@@ -20,6 +20,10 @@ class LeaderBoard : public Engine::State
         std::vector<std::unique_ptr<sf::Text>> m_levelTexts;
         std::vector<std::unique_ptr<sf::RectangleShape>> m_levelButtons;
         std::vector<std::unique_ptr<sf::RectangleShape>> m_leaderBoxes;
+        std::vector<std::unique_ptr<sf::Text>> m_leaderRankTexts;
+        std::vector<std::unique_ptr<sf::Text>> m_leaderNameTexts;
+        std::vector<std::unique_ptr<sf::Text>> m_leaderScoreTexts;
+        std::vector<std::unique_ptr<sf::Text>> m_leaderDateTexts;
         std::vector<bool> m_levelUnlocked;
         
         int m_selectedLevel;

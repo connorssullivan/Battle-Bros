@@ -35,7 +35,7 @@ namespace Records{
     std::string getCurrentDate();
     std::vector<GameRecord> loadAllGameRecords();
     void saveGameRecord(const GameRecord& gm);
-    std::vector<GameRecord> getTop10Records(int level);
+    std::vector<GameRecord> getTop5Records(int level);
     void sortRecords(std::vector<GameRecord>& gr);
 
     inline std::vector<GameRecord> loadAllGameRecords()
@@ -154,7 +154,7 @@ namespace Records{
 
 
 
-    inline std::vector<GameRecord> getTop10Records(int level)
+    inline std::vector<GameRecord> getTop5Records(int level)
     {
         std::vector<GameRecord> records = loadAllGameRecords();
 
@@ -165,9 +165,9 @@ namespace Records{
         // Sort by score (highest first)
         sortRecords(records);
         
-        // Return top 10 (or fewer if less than 10 records exist)
-        if (records.size() > 10) {
-            records.resize(10);
+        // Return top 5 (or fewer if less than 5 records exist)
+        if (records.size() > 5) {
+            records.resize(5);
         }
         
         return records;

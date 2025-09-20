@@ -872,7 +872,7 @@ bool Level1::checkGotStar()
         m_score += 100;
         int level {1};
         std::cout << "Getting Game Records\n";
-        std::vector<Records::GameRecord> records = Records::getTop10Records(level);
+        std::vector<Records::GameRecord> records = Records::getTop5Records(level);
         std::cout << records.size();
         if (records.size() < 10 || records[9].m_score < m_score)
             m_context->m_states->Add(std::make_unique<HighScoreForm>(m_context, m_score, level), true);
