@@ -1,3 +1,5 @@
+#include <string>
+
 #pragma once
 
 namespace Config 
@@ -14,4 +16,6 @@ namespace Config
 
     inline constexpr float GRAVITY = 1000.f;
     inline constexpr float ROCK_SPEED = 300.f; // Adjust for camera smoothness
+
+    inline constexpr std::string HIGH_SCORES = "highscores.json";
 }

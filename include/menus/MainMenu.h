@@ -10,6 +10,7 @@
 #include "Game.h"
 #include "sprites/BlueDude.h"
 #include "sprites/Monster.h"
+#include "HighScoreForm.h"
 
 class Context;
 

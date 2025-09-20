@@ -333,7 +333,7 @@ void Level1::Init()
     // Zigzag platforms
     for (int i = 0; i < 6; ++i) 
     {
-        float yPos = (i % 2 == 0) ? 300.f : 450.f;
+        float yPos = (i % 2 == 0) ? 350.f : 450.f;
         auto brick = std::make_unique<sf::Sprite>(brickTex);
         brick->setScale({scaleX, scaleY});
         brick->setPosition({2300.f + i * brickWidth, yPos});
@@ -341,7 +341,7 @@ void Level1::Init()
 
         std::unique_ptr coin = std::make_unique<Coin>(coin1,coin2,coin3,coin4,coin5,coin6);
         coin->GetSprite().setScale({scaleX, scaleY});
-        coin->GetSprite().setPosition({2300.f + i * brickWidth, yPos - 30});
+        coin->GetSprite().setPosition({2300.f + i * brickWidth, yPos - 50});
         m_coins.push_back(std::move(coin));
     }
 
@@ -434,16 +434,18 @@ void Level1::Init()
     }
 
     // Initalize score score and rock
-    m_scoreText = sf::Text(m_context->m_assets->getFont(MAIN_FONT), "Score: ", 30);
+    m_scoreText = std::make_unique<sf::Text>(m_context->m_assets->getFont(MAIN_FONT), "Score: ", 30);
     m_scoreText->setString("Score: " + std::to_string(m_score));
     m_scoreText->setPosition({10.f, 20.f});
 
     m_rock = std::make_unique<sf::Sprite>(rockTex);
+    m_rockAmmo = std::make_unique<sf::Text>(m_context->m_assets->getFont(MAIN_FONT), "1x", 20);
     m_rock->setScale({5.f, 5.f,});
-    const float uiPadding = 10.f;
+    const float uiPadding = 15.f;
     {
         sf::FloatRect rb = m_rock->getGlobalBounds();
         m_rock->setPosition({static_cast<float>(Config::SCREEN_WIDTH) - rb.size.x - uiPadding, uiPadding});
+        m_rockAmmo->setPosition({static_cast<float>(Config::SCREEN_WIDTH) - rb.size.x - uiPadding - 25, 25.f});
     }
     
 
@@ -586,7 +588,9 @@ void Level1::Update(sf::Time deltaTime)
                     // TODO: Monster Attack
                     m_player->kill();
                     if (m_player->getDidDeathEnd())
+                    {
                         m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+                    }
                 }
             }
         }
@@ -595,10 +599,12 @@ void Level1::Update(sf::Time deltaTime)
         if (m_player->getRockState() != Character::RockState::None)
         {
             m_rock->setColor(sf::Color(160, 160, 160, 160));
+            m_rockAmmo->setString("0x");
         }
         else
         {
             m_rock->setColor(sf::Color(255, 255, 255, 255));
+            m_rockAmmo->setString("1x");
         }
         
         
@@ -658,8 +664,8 @@ void Level1::Draw()
     // Draw Fixed UI elements 
     m_context->m_window->setView(m_context->m_window->getDefaultView());  // Reset to default view for UI
     m_context->m_window->draw(*m_scoreText);
-    if (m_rock)
-        m_context->m_window->draw(*m_rock);
+    m_context->m_window->draw(*m_rock);
+    m_context->m_window->draw(*m_rockAmmo);
     
     m_context->m_window->display();
 }
@@ -864,7 +870,15 @@ bool Level1::checkGotStar()
             }
         }
         m_score += 100;
-        m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+        int level {1};
+        std::cout << "Getting Game Records\n";
+        std::vector<Records::GameRecord> records = Records::getTop10Records(level);
+        std::cout << records.size();
+        if (records.size() < 10 || records[9].m_score < m_score)
+            m_context->m_states->Add(std::make_unique<HighScoreForm>(m_context, m_score, level), true);
+        else 
+            m_context->m_states->Add(std::make_unique<GameOver>(m_context, m_score), true);
+        
         return true;
     }
 

@@ -11,6 +11,11 @@ FetchContent_Declare(SFML
     GIT_SHALLOW ON
     EXCLUDE_FROM_ALL
     SYSTEM)
+
+FetchContent_Declare(nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+    )
+FetchContent_MakeAvailable(nlohmann_json)
 FetchContent_MakeAvailable(SFML)
 
 add_executable(main 
@@ -28,9 +33,10 @@ add_executable(main
     src/Monster.cpp
     src/LevelSelector.cpp
     src/Star.cpp
+    src/HighScoreForm.cpp
 )
 target_compile_features(main PRIVATE cxx_std_20)
-target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)
+target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio nlohmann_json::nlohmann_json)
 
 # INclude my libraries 
 target_include_directories(main PRIVATE 

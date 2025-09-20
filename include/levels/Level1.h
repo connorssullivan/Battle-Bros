@@ -40,7 +40,8 @@ class Level1 : public Engine::State
         std::unique_ptr<sf::Sprite> m_ground; 
         std::unique_ptr<sf::Sprite> m_rock;
         std::unique_ptr<Character> m_player; 
-        std::optional<sf::Text> m_scoreText;
+        std::unique_ptr<sf::Text> m_scoreText;
+        std::unique_ptr<sf::Text> m_rockAmmo;
         std::vector<std::unique_ptr<sf::Sprite>> m_bricks;
         std::vector<std::unique_ptr<Coin>> m_coins;
         std::vector<std::unique_ptr<Monster>> m_monsters;
