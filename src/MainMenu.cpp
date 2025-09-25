@@ -225,6 +225,7 @@ void MainMenu::ProcessInput()
                 if (m_isExitButtonSelected)
                 {
                     m_isExitButtonPressed = true;
+                    //m_context->m_window->close();
                 }
             default:
                 break;

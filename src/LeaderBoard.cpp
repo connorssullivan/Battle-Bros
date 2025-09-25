@@ -21,7 +21,7 @@ LeaderBoard::~LeaderBoard()
 
 void LeaderBoard::Init()
 {
-    std::cout << "=== LeaderBoard::Init() called ===" << std::endl;
+    //std::cout << "=== LeaderBoard::Init() called ===" << std::endl;
     
     // Clear existing data to prevent accumulation
     m_levelButtons.clear();
@@ -183,23 +183,22 @@ void LeaderBoard::UpdateSelection(int newSelection)
     m_selectedLevel = newSelection;
     
     // Update button colors
-    std::cout << "Total buttons in vector: " << m_levelButtons.size() << std::endl;
-    std::cout << "m_totalLevels: " << m_totalLevels << std::endl;
+    
     for (int i = 0; i < m_levelButtons.size(); ++i)
     {
         if (i == m_selectedLevel)
         {
-            std::cout << "Setting button " << i << " to RED (selected)" << std::endl;
+           
             m_levelButtons[i]->setFillColor(m_selectedColor);
         }
         else if (m_levelUnlocked[i])
         {
-            std::cout << "Setting button " << i << " to NORMAL (unlocked)" << std::endl;
+           
             m_levelButtons[i]->setFillColor(m_normalColor);
         }
         else
         {
-            std::cout << "Setting button " << i << " to GRAY (locked)" << std::endl;
+            
             m_levelButtons[i]->setFillColor(m_lockedColor);
         }
     }

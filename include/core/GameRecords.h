@@ -102,7 +102,7 @@ namespace Records{
         if (file.is_open()) {
             file << j.dump(4); // 4 space indent
         } else {
-            std::cerr << "Error: Could not open high scores file for writing" << std::endl;
+            std::cerr << "Error: Could not open \n";
         }
     }
 

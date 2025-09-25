@@ -35,7 +35,7 @@ class Level1 : public Engine::State
 
         //Sprites
         std::unique_ptr<sf::Sprite> m_background;
-        std::unique_ptr<sf::Sprite> m_background2; // Second background for repeating
+        std::unique_ptr<sf::Sprite> m_background2; 
         std::array<std::unique_ptr<sf::Sprite>, 3> m_walls;
         std::unique_ptr<sf::Sprite> m_ground; 
         std::unique_ptr<sf::Sprite> m_rock;
