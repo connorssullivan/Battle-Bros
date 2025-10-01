@@ -834,11 +834,12 @@ void Level1::CheckMonsterHit()
             float normalizedDistance = (dx * dx) / (attackRadiusX * attackRadiusX) + 
                                       (dy * dy) / (attackRadiusY * attackRadiusY);
 
+            // Exit after hitting one monster
             if (normalizedDistance < 1.0f) {
-                std::cout << "Monster hit by rock!" << std::endl;
+                //std::cout << "Monster hit by rock!" << std::endl;
                 monster->SetState(Monster::State::Death);
                 m_player->resetRock();
-                return; // Exit after hitting one monster
+                return; 
             }
         }
     }

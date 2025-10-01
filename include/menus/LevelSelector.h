@@ -15,7 +15,7 @@ class LevelSelector : public Engine::State
 private:
     std::shared_ptr<Context> m_context;
     
-    std::optional<sf::Text> m_titleText;
+    std::unique_ptr<sf::Text> m_titleText;
     std::vector<std::unique_ptr<sf::Text>> m_levelTexts;
     std::vector<std::unique_ptr<sf::RectangleShape>> m_levelButtons;
     std::vector<bool> m_levelUnlocked;

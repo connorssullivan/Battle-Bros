@@ -19,10 +19,10 @@ class GameOver : public Engine::State
         bool m_isPlayButtonPressed;
         std::shared_ptr<Context> m_context;
 
-        std::optional<sf::Text> m_gameTitle;
-        std::optional<sf::Text> m_playButton;
-        std::optional<sf::Text> m_exitButton;
-        std::optional<sf::Text> m_score;
+        std::unique_ptr<sf::Text> m_gameTitle;
+        std::unique_ptr<sf::Text> m_playButton;
+        std::unique_ptr<sf::Text> m_exitButton;
+        std::unique_ptr<sf::Text> m_score;
 
     public:
         GameOver(std::shared_ptr<Context>& context, int score);

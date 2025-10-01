@@ -23,11 +23,11 @@ namespace Engine
             AssetMan();
             ~AssetMan();
 
-            void AddTexture(int id, std::string& filePath, bool wantRepeated = false);
-            void AddFont(int id, std::string& filepath);
+            void AddTexture(const int id, const std::string& filePath, const bool wantRepeated = false);
+            void AddFont(const int id, const std::string& filepath);
 
-            const sf::Texture& getTexture(int id) const;
-            const sf::Font& getFont(int id) const;
+            const sf::Texture& getTexture(const int id) const;
+            const sf::Font& getFont(const int id) const;
 
     };
 };

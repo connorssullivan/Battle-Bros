@@ -22,7 +22,7 @@ void LevelSelector::Init()
     m_levelUnlocked.resize(m_totalLevels, false);
     m_levelUnlocked[0] = true; // Only first level unlocked
     
-    m_titleText = sf::Text(m_context->m_assets->getFont(MAIN_FONT), "Select Level", 48);
+    m_titleText = std::make_unique<sf::Text>(sf::Text(m_context->m_assets->getFont(MAIN_FONT), "Select Level", 48));
     m_titleText->setPosition({
         (Config::SCREEN_WIDTH - m_titleText->getGlobalBounds().size.x) / 2,
         50

@@ -22,9 +22,9 @@ void GameOver::Init()
 
     const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
-    m_score = sf::Text(font, ("YOUR SCORE: " + std::to_string(m_scoreValue)), 50);
+    m_score = std::make_unique<sf::Text>(sf::Text(font, ("YOUR SCORE: " + std::to_string(m_scoreValue)), 50));
 
-    m_gameTitle = sf::Text(font, "GAME OVER", 50);
+    m_gameTitle = std::make_unique<sf::Text>(sf::Text(font, "GAME OVER", 50));
 
     sf::FloatRect bounds = m_gameTitle->getLocalBounds();
 
@@ -50,7 +50,7 @@ void GameOver::Init()
     ));
 
 
-    m_playButton = sf::Text(font, "Retry", 30);
+    m_playButton = std::make_unique<sf::Text>(sf::Text(font, "Retry", 30));
 
     bounds = m_playButton->getLocalBounds();
 
@@ -65,7 +65,7 @@ void GameOver::Init()
     });
 
 
-     m_exitButton = sf::Text(font, "Exit", 30);
+     m_exitButton = std::make_unique<sf::Text>(sf::Text(font, "Exit", 30));
 
     bounds = m_exitButton->getLocalBounds();
 

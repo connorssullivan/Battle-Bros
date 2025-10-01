@@ -13,7 +13,7 @@ Engine::AssetMan::~AssetMan()
 
 }
 
-void Engine::AssetMan::AddTexture(int id, std::string& filePath, bool wantRepeated)
+void Engine::AssetMan::AddTexture(const int id, const std::string& filePath, const bool wantRepeated)
 {
     // Create a new texture and load it from the file
     
@@ -27,7 +27,7 @@ void Engine::AssetMan::AddTexture(int id, std::string& filePath, bool wantRepeat
 }
 
 
-void Engine::AssetMan::AddFont(int id, std::string& filepath)
+void Engine::AssetMan::AddFont(const int id, const std::string& filepath)
 {
     // Create a new font and load it from the file
     
@@ -40,7 +40,7 @@ void Engine::AssetMan::AddFont(int id, std::string& filepath)
 
 }
 
-const sf::Texture& Engine::AssetMan::getTexture(int id) const
+const sf::Texture& Engine::AssetMan::getTexture(const int id) const
 {
     return *(m_textures.at(id).get());
 }

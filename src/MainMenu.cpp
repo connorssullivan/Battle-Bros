@@ -91,7 +91,7 @@ void MainMenu::Init()
     const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
     // Game Title
-    m_gameTitle = sf::Text(font, "The Blue Dude", 30);
+    m_gameTitle = std::make_unique<sf::Text>(sf::Text(font, "The Blue Dude", 30));
     m_gameTitle->setFont(font);
     m_gameTitle->setString("The Blue Dude");
     m_gameTitle->setFillColor(sf::Color::Red);
@@ -110,7 +110,7 @@ void MainMenu::Init()
     ));
 
     // Levels Button
-    m_levelsButton = sf::Text(font, "Levels", 20);
+    m_levelsButton = std::make_unique<sf::Text>(sf::Text(font, "Levels", 20));
     m_levelsButton->setFont(font);
     m_levelsButton->setString("Levels");
 
@@ -127,7 +127,7 @@ void MainMenu::Init()
     ));
 
     // Exit Button
-    m_exitButton = sf::Text(font, "Exit", 20);
+    m_exitButton = std::make_unique<sf::Text>(sf::Text(font, "Exit", 20));
     m_exitButton->setFont(font);
     m_exitButton->setString("Exit");
     

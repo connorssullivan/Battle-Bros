@@ -21,7 +21,7 @@ void PauseGame::Init()
     const sf::Font& font = m_context->m_assets->getFont(MAIN_FONT);
 
     // Game Title
-    m_gameTitle = sf::Text(font, "Pause", 30);
+    m_gameTitle = std::make_unique<sf::Text>(sf::Text(font, "Pause", 30));
     m_gameTitle->setFont(font);
 
     
@@ -39,7 +39,7 @@ void PauseGame::Init()
     ));
 
     // Play Button
-    m_playButton = sf::Text(font, "Resume", 20);
+    m_playButton = std::make_unique<sf::Text>(sf::Text(font, "Resume", 20));
     m_playButton->setFont(font);
 
     sf::FloatRect play_bounds = m_playButton->getLocalBounds();
@@ -57,7 +57,7 @@ void PauseGame::Init()
     ));
 
     // Exit Button
-    m_exitButton = sf::Text(font, "Exit", 20);
+    m_exitButton = std::make_unique<sf::Text>(sf::Text(font, "Exit", 20));
     m_exitButton->setFont(font);
     
     sf::FloatRect exit_bounds = m_exitButton->getLocalBounds();

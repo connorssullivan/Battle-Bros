@@ -20,9 +20,9 @@ class MainMenu : public Engine::State
     private:
         std::shared_ptr<Context> m_context;
 
-        std::optional<sf::Text> m_gameTitle;
-        std::optional<sf::Text> m_levelsButton;
-        std::optional<sf::Text> m_exitButton;
+        std::unique_ptr<sf::Text> m_gameTitle;
+        std::unique_ptr<sf::Text> m_levelsButton;
+        std::unique_ptr<sf::Text> m_exitButton;
         std::unique_ptr<sf::Text> m_leaderboard;
         std::unique_ptr<sf::Sprite> m_background;
         std::unique_ptr<sf::Sprite> m_floor;
