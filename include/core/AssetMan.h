@@ -9,6 +9,8 @@
 #include <SFML/Graphics/Font.hpp>
 #include <memory>
 
+
+#include "AssetID.h"
 #include "Config.h"
 
 namespace Engine 
@@ -23,11 +25,11 @@ namespace Engine
             AssetMan();
             ~AssetMan();
 
-            void AddTexture(const int id, const std::string& filePath, const bool wantRepeated = false);
-            void AddFont(const int id, const std::string& filepath);
+            void AddTexture(const AssetID id, const std::string& filePath, const bool wantRepeated = false);
+            void AddFont(const AssetID id, const std::string& filepath);
 
-            const sf::Texture& getTexture(const int id) const;
-            const sf::Font& getFont(const int id) const;
+            const sf::Texture& getTexture(const AssetID id) const;
+            const sf::Font& getFont(const AssetID id) const;
 
     };
 };

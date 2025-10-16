@@ -704,7 +704,7 @@ void Level1::UpdateCamera()
     if (m_background && m_background2) {
         sf::Vector2f bgOffset = (newCenter - sf::Vector2f(Config::SCREEN_WIDTH / 2.0f, Config::SCREEN_HEIGHT / 2.0f)) * 0.1f;
         sf::Vector2u textureSize = m_context->m_assets->getTexture(BACKGROUND).getSize();
-        float bgScaleX = static_cast<float>(3000) / textureSize.x; // level_width value
+        float bgScaleX = static_cast<float>(3000) / textureSize.x; // level width value
         float bgScaleY = static_cast<float>(Config::SCREEN_HEIGHT) / textureSize.y;
         float bgScale = std::max(bgScaleX, bgScaleY);
         float bgWidth = textureSize.x * bgScale;
